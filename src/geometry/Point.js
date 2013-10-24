@@ -4,6 +4,15 @@
 //
 // Use `Point#fromGeodeticCoordinate(latitude, longitude)` to construct a point from geodetic latitude/longitude.
 //
+// *Precision of calculations*
+// Earth is always assumed to the spherical.
+// Precision is fixed to 0.0001 degrees.
+//
+// - 1 degree of latitude is 69 miles (111 km) - assuming a spherical earth
+// - 1 degree of longitude is widest at the equator at 69.172 miles (111.321 km) and gradually shrinks to zero at the poles 
+// 
+// so a precision of 0.0001 degree equivalates to 1.1 meter at worst.
+//
 /*jslint node: true, white: true, indent: 4 */
 (function() {
     
@@ -28,11 +37,12 @@
     
     //
     // Returns the surface distance (length of geodesic) **in radians** from this point to the specified point, assuming **spherical earth**.
+    // Decimal places of the returned value is fixed by  `Precision#toFixed` - see [Precision]('./Precision.html');
     //
     Point.prototype.angularDistance = function(to) {
         var nv = this.vector(),
             tnv = to.vector();
-        return Math.atan2(tnv.cross(nv).norm(), tnv.dot(nv));
+        return Point.toFixed(Math.atan2(tnv.cross(nv).norm(), tnv.dot(nv)), Point.RELEVANT_DECIMALS_RADIANS);
     };
     
     //
@@ -40,7 +50,7 @@
     // mean earth radius of 6378137.0 meters (WGS84 earth equatorial radius).
     //
     Point.prototype.distance = function(to) {
-        return this.angularDistance(to) * Point.WGS84_EARTH_EQUATORIAL_RADIUS_METER;
+        return Point.toFixed(this.angularDistance(to) * Point.WGS84_EARTH_EQUATORIAL_RADIUS_METER, 0);
     };
     
     //
@@ -48,7 +58,7 @@
     // diametrically opposite to this point.
     //
     Point.prototype.antipode = function() {
-        return new Point(this.vector().scale(-1));
+        return new Point(this.vector().scale(-1.0));
     };
     
     //
@@ -60,8 +70,8 @@
             latRad = Math.atan2(nvector.z(), Math.sqrt(Math.pow(nvector.x(), 2) + Math.pow(nvector.y(), 2))),
             longRad = Math.atan2(nvector.y(), nvector.x());
         return {
-                'latitude'  : Point.toDegrees(latRad),
-                'longitude' : Point.toDegrees(longRad)
+                'latitude'  : Point.toFixed(Point.toDegrees(latRad), Point.RELEVANT_DECIMALS_DEGREES),
+                'longitude' : Point.toFixed(Point.toDegrees(longRad), Point.RELEVANT_DECIMALS_DEGREES)
                };
     };
     
@@ -95,7 +105,17 @@
         if (this === o) {
             result = true;
         } else {
-            result = this.vector().equals(o.vector());
+            var v = this.vector(),
+                ov = o.vector();
+            if (!Point.floatEqual(v.x(), ov.x())) {
+                result = false;
+            } else if (!Point.floatEqual(v.y(), ov.y())) {
+                result = false;
+            } else if (!Point.floatEqual(v.z(), ov.z())) {
+                result = false;
+            } else {
+                result = true;
+            }
         }
         return result;
     };
@@ -130,9 +150,34 @@
     Point.NORTH_POLE = new Point(new PositionVector(0.0, 0.0, 1.0));
     
     Point.SOUTH_POLE = new Point(new PositionVector(0.0, 0.0, -1.0));
-    
+            
     // WGS84 earth equatorial radius.
     Point.WGS84_EARTH_EQUATORIAL_RADIUS_METER = 6378137.0;
+    
+    // number of decimals relevant for latitude/longitude values.
+    Point.RELEVANT_DECIMALS_DEGREES = 5;
+    
+    // number of decimals relevant for angles expressed in radians.
+    Point.RELEVANT_DECIMALS_RADIANS = 6;
+    
+    // epsilon to consider 2 cartesian coordinates equal. 
+    // Note: z = 1 === latitude = 90 degrees, this epsilon therefore ensures a precision down to the meter.
+    Point.CARTESIAN_EPSILON = 1.0 / (111000.0 * 90.0);
+    
+    //
+    // Returns `true` if *a ~= b* using `Point#CARTESIAN_EPSILON` as epsilon.
+    //
+    Point.floatEqual = function(a, b) {
+        return Math.abs(a - b) < Point.CARTESIAN_EPSILON;
+    };
+    
+    //
+    // Returns the specified floating point number with the specified number of decimals.
+    //
+    Point.toFixed = function(number, precision) {
+        var multiplier = Math.pow(10, precision);
+        return Math.round(number * multiplier) / multiplier;
+    };
 
     // expose API to Node.js
     module.exports = Point;

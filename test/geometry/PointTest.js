@@ -2,26 +2,58 @@
 var assert = require('../Assert');
 var Point = require('../../src/geometry/Point');
 
-var precision = 0.0000000001;
+var degreeEpsilon = 1.0 / Point.RELEVANT_DECIMALS_DEGREES;
 
 describe('Point', function() {
     
     describe('Point#fromGeodeticCoordinate(latitude, longitude)', function() {
         it('should return convert latitude, longitude to a position', function() {
             var v = Point.fromGeodeticCoordinate(55.583333, 13.033333).vector();
-            assert.floatEqual(0.5506467195275367, v.x(), precision);
-            assert.floatEqual(0.1274642822210135, v.y(), precision);
-            assert.floatEqual(0.8249491178439092, v.z(), precision);
+            assert.floatEqual(0.5506467195275367, v.x(), Point.CARTESIAN_EPSILON);
+            assert.floatEqual(0.1274642822210135, v.y(), Point.CARTESIAN_EPSILON);
+            assert.floatEqual(0.8249491178439092, v.z(), Point.CARTESIAN_EPSILON);
             assert.equal(1, v.norm());
         });
+    });
+    
+    describe('#equals(Point)', function() {
+        it('should return true if both points are the same reference', function() {
+            var p = Point.fromGeodeticCoordinate(55.583333, 13.033333);
+            assert.true(p.equals(p));
+        });
+
+        it('should return true if both points contain the same values', function() {
+            var p1 = Point.fromGeodeticCoordinate(55.583333, 13.033333);
+            var p2 = Point.fromGeodeticCoordinate(55.583333, 13.033333);
+            assert.true(p1.equals(p2));
+        });
+
+        it('should return true if both points contain the same values (precision)', function() {
+            var p1 = Point.fromGeodeticCoordinate(55.583339, 13.033338);
+            var p2 = Point.fromGeodeticCoordinate(55.583333, 13.033333);
+            assert.true(p1.equals(p2));
+        });
+
+        it('should return false if points contain different values', function() {
+            var p1 = Point.fromGeodeticCoordinate(55.583340, 13.033360);
+            var p2 = Point.fromGeodeticCoordinate(55.583333, 13.033333);
+            assert.false(p1.equals(p2));
+        });
+        
+        it('should return false if points contain different values', function() {
+            var p1 = Point.fromGeodeticCoordinate(55.583333, 13.033333);
+            var p2 = Point.fromGeodeticCoordinate(13.033333, 55.583333);
+            assert.false(p1.equals(p2));
+        });
+
     });
     
     describe('#geodeticCoordinate()', function() {
        it('should return the geodetic coordinate (latitude/longitude) of the position', function() {
             var p = Point.fromGeodeticCoordinate(55.583333, 13.033333);
             var geodeticCoordinate = p.geodeticCoordinate();
-            assert.floatEqual(55.583333, geodeticCoordinate.latitude, precision);
-            assert.floatEqual(13.033333, geodeticCoordinate.longitude, precision);
+            assert.floatEqual(55.583333, geodeticCoordinate.latitude, degreeEpsilon);
+            assert.floatEqual(13.033333, geodeticCoordinate.longitude, degreeEpsilon);
         });
     });
     
@@ -29,13 +61,15 @@ describe('Point', function() {
         it('should return the distance in meter between this position and specified position.', function() {
             var p1 = Point.fromGeodeticCoordinate(55.583333, 13.033333);
             var p2 = Point.fromGeodeticCoordinate(59.35, 18.066667);
-            assert.floatEqual(p1.distance(p2), 516041.4, 0.1); 
+            // precision of 1 meter
+            assert.floatEqual(p1.distance(p2), 516041.0, 1.0); 
         });
         
         it('should return the distance in meter between this position and specified position.', function() {
             var p1 = Point.fromGeodeticCoordinate(55.583333, 13.033333);
             var p2 = Point.fromGeodeticCoordinate(59.35, 18.066667);
-            assert.floatEqual(p2.distance(p1), 516041.4, 0.1); 
+            // precision of 1 meter
+            assert.floatEqual(p2.distance(p1), 516041.0, 1.0); 
        });
     });
     
@@ -44,9 +78,9 @@ describe('Point', function() {
             var np = Point.fromGeodeticCoordinate(90, 0);
             var result = np.antipode();
             assert.equal(1, result.vector().norm());
-            assert.equal(-90, result.geodeticCoordinate().latitude);
+            assert.equal(-90.0, result.geodeticCoordinate().latitude);
             // longitude is irrelevant at poles.
-            assert.equal(-180, result.geodeticCoordinate().longitude);
+            assert.equal(-180.0, result.geodeticCoordinate().longitude);
         });
     });
     

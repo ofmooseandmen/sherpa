@@ -19,10 +19,10 @@
     //
     function Polygon(points) {
                 
-        // vertices of the polygon.
-        var vertices = List.asList(points),
-        // edges of the polygon.
-            edges = new List();
+        var vertices = List.asList(points), 
+            edges = new List(), 
+            length = points.length, 
+            index, edge;
         
         // closes the polygon if needed.
         function close() {
@@ -36,10 +36,7 @@
                 vertices.remove(vertices.size() - 1);
             }
         }
-
-        var length = points.length,
-            index,
-            edge;
+            
         for (index = 0; index < length - 1; index++) {
             edge = new GreatArc(points[index], points[index + 1]);
             edges.add(edge);
@@ -66,14 +63,26 @@
     // Returns `true` if this polygon contains the specified point. Vertices will be included if and only if `includeVertices` is set to true.
     //
     Polygon.prototype.contains = function(point, includeVertices) {
-        var ref = new GreatArc(point, Point.NORTH_POLE),
-            nbOfIntersection = 0;
-        this.edges().each(function(e) {
-            if (e.intersects(ref, includeVertices)) {
-                nbOfIntersection++;
+        var result, refPoint, nbOfIntersections = 0, refGreatArc;
+        if (this.vertices().contains(point)) {
+            result = includeVertices;
+        } else {
+            if (point.isPole()) {
+                // FIXME: issue with great arc; as soon as angle between start and end is 180, intersections won't work since
+                // cross product is 0.
+                throw new Error('Not yet implemented: cross poduct of north and south is 0 since vector are //');
+            } else {
+                refPoint = Point.NORTH_POLE;
             }
-        });
-        return nbOfIntersection % 2 !== 0;
+            refGreatArc = new GreatArc(point, refPoint);
+            this.edges().each(function(e) {
+                if (e.intersects(refGreatArc, false)) {
+                    nbOfIntersections++;
+                }
+            });
+            result = nbOfIntersections % 2 !== 0;
+        }
+        return result;
     };
     
     // expose API to Node.js

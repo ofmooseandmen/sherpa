@@ -12,39 +12,6 @@ describe('PositionVector', function() {
         });
     });
     
-    
-    describe('#equals(PositionVector)', function() {
-        it('should return true if both vectors are the same reference', function() {
-            var v = new PositionVector(-15.4, 45.1, -5.14);
-            assert.true(v.equals(v));
-        });
-
-        it('should return true if both vectors contain the same values', function() {
-            var v1 = new PositionVector(-15.4, 45.1, -5.14);
-            var v2 = new PositionVector(-15.4, 45.1, -5.14);
-            assert.true(v1.equals(v2));
-        });
-
-        it('should return true if both vectors contain the same values (precision)', function() {
-            var v1 = new PositionVector(-15.40000008, 45.100000009, -5.140000007);
-            var v2 = new PositionVector(-15.4, 45.1, -5.14);
-            assert.true(v1.equals(v2));
-        });
-
-        it('should return false if vectors contain different values', function() {
-            var v1 = new PositionVector(-15.4008, 45.100009, -5.1400007);
-            var v2 = new PositionVector(-15.4, 45.1, -5.14);
-            assert.false(v1.equals(v2));
-        });
-        
-        it('should return false if vectors contain different values', function() {
-            var v1 = new PositionVector(0, 0, -1);
-            var v2 = new PositionVector(0, 0, 1);
-            assert.false(v1.equals(v2));
-        });
-
-    });
-    
     describe('#cross(PositionVector)', function() {
         it('should return the cross product of v1 and v2', function() {
             var v1 = new PositionVector(1, 4, 5);

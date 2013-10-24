@@ -102,5 +102,56 @@ describe('List', function() {
             assert.equal(3, list.size());
         });
     });
+    
+    describe('#contains(element)', function() {
+        it('should return true if the list contains the element - reference', function() {
+            var arr = [1, 2, 3];
+            var list = List.asList(arr);
+            assert.true(list.contains(2));
+        });
+        
+        it('should return true if the list contains the element - #equals(o)', function() {
+            var a = {   
+                name : 'a',
+                equals : function(other) {
+                    return this.name === other.name;
+                }
+            };
+            var arr = [a, 2, 5];
+            var list = List.asList(arr);
+            var other = {   
+                name : 'a',
+                equals : function(other) {
+                    return this.name === other.name;
+                }
+            };
+            assert.true(list.contains(other));
+        });
+
+        it('should return false if the list does not contain the element - reference', function() {
+            var arr = [1, 2, 3];
+            var list = List.asList(arr);
+            assert.false(list.contains({}));
+        });
+        
+        it('should return false if the list does not contain the element - #equals(o)', function() {
+            var a = {   
+                name : 'a',
+                equals : function(other) {
+                    return this.name === other.name;
+                }
+            };
+            var arr = [a, 2, 5];
+            var list = List.asList(arr);
+            var other = {   
+                name : 'b',
+                equals : function(other) {
+                    return this.name === other.name;
+                }
+            };
+            assert.false(list.contains(other));
+        });
+
+    });
 
 });

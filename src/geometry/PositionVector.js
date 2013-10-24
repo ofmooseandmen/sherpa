@@ -3,11 +3,11 @@
 //
 /*jslint node: true, white: true, indent: 4 */
 (function() {
-    
+
     'use strict';
 
     //
-    // Constructor - takes all three components of the vector as inputs. 
+    // Constructor - takes all three coordinates of the vector as inputs. 
     //
     function PositionVector(x, y, z) {
         
@@ -31,7 +31,7 @@
         this.z = function() {
             return z;
         };
-        
+                
     }
     
     //
@@ -72,28 +72,6 @@
     PositionVector.prototype.scale = function(s) {
         return new PositionVector(this.x() * s, this.y() * s, this.z() * s);
     };
-        
-    //
-    // Returns `true` if this vector equals the specified other vector. 
-    // The tolerance used to compare each component is fixed to `PositionVector#PRECISION`.
-    //
-    PositionVector.prototype.equals = function(o) {
-        var result;
-        if (this === o) {
-            result = true;
-        } else {
-            if (!PositionVector.floatEqual(this.x(), o.x())) {
-                result = false;
-            } else if (!PositionVector.floatEqual(this.y(), o.y())) {
-                result = false;
-            } else if (!PositionVector.floatEqual(this.z(), o.z())) {
-                result = false;
-            } else {
-                result = true;
-            }
-        }
-        return result;
-    };
     
     //
     // Returns a string representation of this vector.
@@ -101,17 +79,7 @@
     PositionVector.prototype.toString =  function() {
         return '[' + this.x() + ', ' + this.y() + ', ' + this.z() + ']';
     };
-    
-    //
-    // Returns `true` if *a ~= b* using `PositionVector#PRECISION` as tolerance.
-    //
-    PositionVector.floatEqual = function(a, b) {
-        return Math.abs(a - b) < PositionVector.PRECISION;
-    };
-    
-    // precision used to assert equality of a vector.
-    PositionVector.PRECISION = 0.0000001;
-    
+            
     // expose API to Node.js
     module.exports = PositionVector;
 }());

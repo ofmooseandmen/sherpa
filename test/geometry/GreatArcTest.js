@@ -109,6 +109,13 @@ describe('GreatArc', function() {
             var gc2 = new GreatArc(Point.fromGeodeticCoordinate(50.03, 5.42), Point.fromGeodeticCoordinate(51.885, 0.235));
             assert.true(gc1.intersects(gc2, true));
         });
+        
+        it('should return false - for precision', function() {
+            var MALMOE = Point.fromGeodeticCoordinate(55.583333, 13.033333);
+            var GOTEBORG = Point.fromGeodeticCoordinate(57.7, 11.966667);
+            var ref = new GreatArc(MALMOE, Point.NORTH_POLE);
+            assert.false(ref.intersects(new GreatArc(MALMOE, GOTEBORG), false));
+        });
 
     });
     

@@ -12,7 +12,9 @@
     'use strict';
     
     // import Iterator.js
-    var Iterator = require('./Iterator');
+    var Iterator = require('./Iterator'),
+    // import Collections.js
+        Collections = require('./Collections');
 
     //
     // Constructor - no argument.
@@ -57,6 +59,14 @@
         //
         this.remove = function(index) {
             elements.splice(index, 1);
+        };
+        
+        //
+        // Returns `true`if this list contains the specified element using `Collections#indexOf`. Therefore if the element
+        // implements the `#equals(o)` function it will be used to assert equality.
+        //
+        this.contains = function(e) {
+            return Collections.indexOf(e, elements) !== -1;
         };
         
     }
