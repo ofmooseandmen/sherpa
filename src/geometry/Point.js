@@ -147,8 +147,10 @@
         return new Point(new PositionVector(x, y, z));
     };
     
+    // north pole
     Point.NORTH_POLE = new Point(new PositionVector(0.0, 0.0, 1.0));
     
+    // south pole
     Point.SOUTH_POLE = new Point(new PositionVector(0.0, 0.0, -1.0));
             
     // WGS84 earth equatorial radius.

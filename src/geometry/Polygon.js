@@ -67,10 +67,10 @@
         if (this.vertices().contains(point)) {
             result = includeVertices;
         } else {
-            if (point.isPole()) {
-                // FIXME: issue with great arc; as soon as angle between start and end is 180, intersections won't work since
-                // cross product is 0.
-                throw new Error('Not yet implemented: cross poduct of north and south is 0 since vector are //');
+            if (point.isNorthPole()) {
+                refPoint = Polygon.CLOSE_TO_SP;
+            } else if (point.isSouthPole()) {
+                refPoint = Polygon.CLOSE_TO_NP;
             } else {
                 refPoint = Point.NORTH_POLE;
             }
@@ -84,6 +84,14 @@
         }
         return result;
     };
+    
+    // Point close to the north pole, used by `#contains(Point, boolean)` when specified point is the south pole,
+    // since a great arc cannot be defined by 2 antipodals points.
+    Polygon.CLOSE_TO_NP = Point.fromGeodeticCoordinate(89.999, 0);
+    
+    // point close to the south pole, used by `#contains(Point, boolean)` when specified point is the north pole,
+    // since great arc cannot be defined by 2 antipodals points.
+    Polygon.CLOSE_TO_SP = Point.fromGeodeticCoordinate(-89.999, 0);
     
     // expose API to Node.js
     module.exports = Polygon;
