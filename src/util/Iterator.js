@@ -9,15 +9,16 @@
 // ## Source code
 //
 // Constructor - takes the array to iterate over as input.
+/*jslint node: true, white: true, indent: 4 */
 function Iterator(arr) {
 
-    'use strict';	
+    'use strict';
 
     // length of `array` to iterate on.
-    var length = arr.length;
+    var length = arr.length,
 
     // current index of this iterator.
-    var current = 0;
+        current = 0;
 
     //
     // Returns `true` if the iteration has more elements.

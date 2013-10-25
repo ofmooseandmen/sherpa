@@ -40,10 +40,10 @@
     function Map() {
         
         // the `array` in which all keys are stored.
-        var keys = [];
+        var keys = [],
     
         // the `array` in which all values are stored.
-        var values = [];
+            values = [];
         
         // The following methods are priviliged methods, since keys and values must be private.
         
@@ -85,10 +85,10 @@
         //
         this.remove = function(key) {
             var keyIndex = Collections.indexOf(key, keys),
-                result;
+                result, res;
             if (keyIndex !== -1) {
                 keys.splice(keyIndex, 1);
-                var res = values.splice(keyIndex, 1);
+                res = values.splice(keyIndex, 1);
                 result = res[0];
             }
             return result;
@@ -120,9 +120,9 @@
         this.entries = function() {
             var result = [],
                 keysLength = this.size(),
-                index;
+                index, entry;
             for (index = 0; index < keysLength; index++) {
-                var entry = {
+                entry = {
                     key : keys[index],
                     value : values[index]
                 };
@@ -166,9 +166,9 @@
     Map.prototype.putAll = function(other) {
         var entries = other.entries(),
             length = entries.length,
-            index;
+            index, entry;
         for (index = 0; index < length; index++) {
-            var entry = entries[index];
+            entry = entries[index];
             this.put(entry.key, entry.value);
         }
     };

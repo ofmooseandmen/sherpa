@@ -101,12 +101,12 @@
     // Returns `true` if and only if this point equals the specifiedi other point. Point equality is delegetated to the underlying position vector.
     //
     Point.prototype.equals = function(o) {
-        var result;
+        var result, v, ov;
         if (this === o) {
             result = true;
         } else {
-            var v = this.vector(),
-                ov = o.vector();
+            v = this.vector();
+            ov = o.vector();
             if (!Point.floatEqual(v.x(), ov.x())) {
                 result = false;
             } else if (!Point.floatEqual(v.y(), ov.y())) {

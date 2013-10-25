@@ -88,8 +88,7 @@
     // Call the specified function on each element of this list.
     //
     List.prototype.each = function(callback) {
-        var index;
-        var size = this.size();
+        var index, size = this.size();
         for (index = 0; index < size; index++) {
             callback(this.get(index));
         }

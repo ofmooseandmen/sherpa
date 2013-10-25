@@ -24,10 +24,10 @@
     // Relies on `equal` function if implemented by the specified element, defaults to `array#indexOf(element)` otherwise.
     //
     Collections.indexOf = function(element, elements) {
-        var result = -1;
+        var result = -1, length, index;
         if ( typeof element.equals === 'function') {
-            var length = elements.length;
-            for (var index = 0; index < length && result == -1; index++) {
+            length = elements.length;
+            for (index = 0; index < length && result === -1; index++) {
                 if (element.equals(elements[index])) {
                     result = index;
                 }

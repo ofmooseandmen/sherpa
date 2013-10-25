@@ -16,26 +16,28 @@
         var opened = new Map(),
             closed = new Map(),
             costTotarget = this.workspace.pathCostEstimate(start, target),
-            startVisited = new VisitedNode(start, 0, costTotarget, undefined);
+            startVisited = new VisitedNode(start, 0, costTotarget, undefined),
+            visitedNode, neighbors, neighborsLength, neighborIndex,
+            newNode, newCost, openNode, closedNode, newCostToTarget, newVisitedNode;
         opened.put(start, startVisited);
         while (!opened.isEmpty()) {
-            var visitedNode = this.getFirst(opened);
+            visitedNode = this.getFirst(opened);
             opened.remove(visitedNode.node);
 
             if (visitedNode.matches(target)) {
                 return visitedNode.makePath();
             }
 
-            var neighbors = this.workspace.neighborsOf(visitedNode.node),
-                neighborsLength = neighbors.length;
-            for (var neighborIndex = 0; neighborIndex < neighborsLength; neighborIndex++) {
-                var newNode = neighbors[neighborIndex],
-                    newCost = this.workspace.traverseCost(visitedNode.node, newNode),
-                    openNode = opened.get(newNode);
+            neighbors = this.workspace.neighborsOf(visitedNode.node);
+            neighborsLength = neighbors.length;
+            for (neighborIndex = 0; neighborIndex < neighborsLength; neighborIndex++) {
+                newNode = neighbors[neighborIndex];
+                newCost = this.workspace.traverseCost(visitedNode.node, newNode);
+                openNode = opened.get(newNode);
                 if (openNode !== undefined && openNode.hasCheaperCost(newCost)) {
                     continue;
                 }
-                var closedNode = closed.get(newNode);
+                closedNode = closed.get(newNode);
                 if (closedNode !== undefined && closedNode.hasCheaperCost(newCost)) {
                     continue;
                 }
@@ -47,8 +49,8 @@
                 if (openNode !== undefined) {
                     opened.remove(newNode);
                 }
-                var newCostToTarget = this.workspace.pathCostEstimate(newNode, target),
-                    newVisitedNode = new VisitedNode(newNode, newCost, newCostToTarget, visitedNode);
+                newCostToTarget = this.workspace.pathCostEstimate(newNode, target);
+                newVisitedNode = new VisitedNode(newNode, newCost, newCostToTarget, visitedNode);
                 opened.put(newNode, newVisitedNode);
             }
 
