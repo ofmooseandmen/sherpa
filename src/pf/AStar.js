@@ -13,11 +13,11 @@
 //
 // The heuristic estimate shall never overestimate the distance to the goal.
 //
-// This implementation requires the user to specified the workspace over which the search will be performed. Both the start and goal nodes must be
-// part of the workspace.
+// This implementation requires the user to specify the workspace over which the search will be performed.
 //
 // The workspace shall implement the following methods
 //
+// - `startNode()` and `targetNode()`: returns the start and end nodes between which the shortest path shall be computed
 // - `neighborsOf(Node)`: returns an `array` of nodes which are connected to the specified node
 // - `pathCostEstimate(Node, Node)`: returns the estimate of the cost to get from the specified node to the  specified goal node. If unable to estimate, it is safe to return `0` or underestimate. Overestimates can result in failures to find a path. This corresponds to the *future path-cost function*
 // - `traverseCost(Node, Node)`: the cost to get from specified node to the specified destination node. This corresponds to the *past path-cost function*
@@ -31,14 +31,17 @@
     var Map = require('../util/Map'),
         VisitedNode = require('./VisitedNode');
 
-    function AStar(workspace) {
-        this.workspace = workspace;
-    }
+    //
+    //Constructor.
+    //
+    function AStar() {}
 
-    AStar.prototype.findPath = function (start, target) {
+    AStar.prototype.findPath = function (workspace) {
         var opened = new Map(),
             closed = new Map(),
-            costTotarget = this.workspace.pathCostEstimate(start, target),
+            start = workspace.startNode(),
+            target = workspace.targetNode(),
+            costTotarget = workspace.pathCostEstimate(start, target),
             startVisited = new VisitedNode(start, 0, costTotarget, undefined),
             visitedNode,
             neighbors,
@@ -59,11 +62,11 @@
                 return visitedNode.makePath();
             }
 
-            neighbors = this.workspace.neighborsOf(visitedNode.node);
+            neighbors = workspace.neighborsOf(visitedNode.node);
             neighborsLength = neighbors.length;
             for (neighborIndex = 0; neighborIndex < neighborsLength; neighborIndex += 1) {
                 newNode = neighbors[neighborIndex];
-                newCost = this.workspace.traverseCost(visitedNode.node, newNode);
+                newCost = workspace.traverseCost(visitedNode.node, newNode);
                 openNode = opened.get(newNode);
                 if (openNode !== undefined && openNode.hasCheaperCost(newCost)) {
                     continue;
@@ -80,7 +83,7 @@
                 if (openNode !== undefined) {
                     opened.remove(newNode);
                 }
-                newCostToTarget = this.workspace.pathCostEstimate(newNode, target);
+                newCostToTarget = workspace.pathCostEstimate(newNode, target);
                 newVisitedNode = new VisitedNode(newNode, newCost, newCostToTarget, visitedNode);
                 opened.put(newNode, newVisitedNode);
             }
