@@ -45,7 +45,7 @@
         close();
 
         //
-        // Returns the [list](./List.html) of vertices of this polygon - a.k.a. the corners, the point where two consecutive edges or sides of the polygon meet.
+        // Returns the [list](./List.html) of vertices of this polygon - a.k.a. the corners. A vertex is a point where two consecutive edges or sides of the polygon meet.
         //
         this.vertices = function () {
             return vertices;
@@ -61,7 +61,7 @@
     }
 
     //
-    // Returns `true` if this polygon contains the specified point. Vertices will be included if and only if `includeVertices` is set to true.
+    // Returns `true` if this polygon contains the specified point. Vertices will be included if and only if includeVertices is set to true.
     //
     Polygon.prototype.contains = function (point, includeVertices) {
         var result, refPoint, nbOfIntersections = 0,

@@ -10,7 +10,6 @@
         this.parent = parent;
     }
 
-
     VisitedNode.prototype.matches = function (other) {
         return other === this.node;
     };
@@ -38,7 +37,6 @@
         }
         return result;
     };
-
 
     VisitedNode.prototype.hasCheaperCost = function (other) {
         return this.costFromStart <= other;

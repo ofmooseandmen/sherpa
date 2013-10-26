@@ -71,7 +71,6 @@
 
     }
 
-
     //
     // Add all of the elements of the specified collection to this list.
     // The specified collection shall implement the `#iterator()` function.
@@ -82,7 +81,6 @@
             this.add(it.next());
         }
     };
-
 
     //
     // Call the specified function on each element of this list.
