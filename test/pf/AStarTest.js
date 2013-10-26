@@ -5,6 +5,7 @@
     'use strict';
 
     var assert = require('../Assert'),
+        Set = require('../../src/util/Set'),
         AStar = require('../../src/pf/AStar');
 
     function Workspace(start, target) {
@@ -43,11 +44,13 @@
                 var start = {}, target = {}, astar, path;
 
                 Workspace.prototype.neighborsOf = function (node) {
+                    var set = new Set();
                     if (node === start) {
-                        return [target];
+                        set.add(target);
                     } else if (node === target) {
-                        return [start];
+                        set.add(start);
                     }
+                    return set;
                 };
 
                 astar = new AStar();
@@ -61,17 +64,22 @@
                 var start = {}, target = {}, pt1 = {}, pt2 = {}, pt3 = {}, astar, path;
 
                 Workspace.prototype.neighborsOf = function (node) {
+                    var set = new Set();
                     if (node === start) {
-                        return [pt1, pt2];
+                        set.add(pt1);
+                        set.add(pt2);
                     } else if (node === target) {
-                        return [pt3];
+                        set.add(pt3);
                     } else if (node === pt1) {
-                        return [pt3, start];
+                        set.add(pt3);
+                        set.add(start);
                     } else if (node === pt2) {
-                        return [pt3, start];
+                        set.add(pt3);
+                        set.add(start);
                     } else if (node === pt3) {
-                        return [target];
+                        set.add(target);
                     }
+                    return set;
                 };
 
                 Workspace.prototype.pathCostEstimate = function (from, to) {

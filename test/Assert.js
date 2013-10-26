@@ -35,6 +35,5 @@
         nodeassert.equal(undefined, actual);
     };
 
-    // expose API to Node.js
     module.exports = Assert;
 }());

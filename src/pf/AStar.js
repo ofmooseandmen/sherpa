@@ -17,10 +17,10 @@
 //
 // The workspace shall implement the following methods
 //
-// - `startNode()` and `targetNode()`: returns the start and end nodes between which the shortest path shall be computed
-// - `neighborsOf(Node)`: returns an `array` of nodes which are connected to the specified node
-// - `pathCostEstimate(Node, Node)`: returns the estimate of the cost to get from the specified node to the  specified goal node. If unable to estimate, it is safe to return `0` or underestimate. Overestimates can result in failures to find a path. This corresponds to the *future path-cost function*
-// - `traverseCost(Node, Node)`: the cost to get from specified node to the specified destination node. This corresponds to the *past path-cost function*
+// - `#startNode()` and `#targetNode()`: returns the start and end nodes between which the shortest path shall be computed
+// - `#neighborsOf(Node)`: returns a [set]('../util/Set.html') of nodes which are connected to the specified node
+// - `#pathCostEstimate(Node, Node)`: returns the estimate of the cost to get from the specified node to the  specified goal node. If unable to estimate, it is safe to return `0` or underestimate. Overestimates can result in failures to find a path. This corresponds to the *future path-cost function*
+// - `#traverseCost(Node, Node)`: returns the cost to get from specified node to the specified destination node. This corresponds to the *past path-cost function*
 //
 //
 /*jslint node: true, indent: 4 */
@@ -45,15 +45,15 @@
             startVisited = new VisitedNode(start, 0, costTotarget, undefined),
             visitedNode,
             neighbors,
-            neighborsLength,
-            neighborIndex,
             newNode,
             newCost,
             openNode,
             closedNode,
             newCostToTarget,
             newVisitedNode;
+
         opened.put(start, startVisited);
+
         while (!opened.isEmpty()) {
             visitedNode = this.getFirst(opened);
             opened.remove(visitedNode.node);
@@ -62,10 +62,9 @@
                 return visitedNode.makePath();
             }
 
-            neighbors = workspace.neighborsOf(visitedNode.node);
-            neighborsLength = neighbors.length;
-            for (neighborIndex = 0; neighborIndex < neighborsLength; neighborIndex += 1) {
-                newNode = neighbors[neighborIndex];
+            neighbors = workspace.neighborsOf(visitedNode.node).iterator();
+            while (neighbors.hasNext()) {
+                newNode = neighbors.next();
                 newCost = workspace.traverseCost(visitedNode.node, newNode);
                 openNode = opened.get(newNode);
                 if (openNode !== undefined && openNode.hasCheaperCost(newCost)) {
@@ -103,5 +102,6 @@
         return values[0];
     };
 
+    // expose API to Node.js
     module.exports = AStar;
 }());
