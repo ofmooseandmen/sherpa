@@ -1,52 +1,103 @@
-var assert = require('../Assert');
-var AStar = require('../../src/pf/AStar');
+/*jslint node: true, indent: 4 */
+/*global describe, it */
+(function () {
 
-function Workspace() {
-};
+    'use strict';
 
-Workspace.prototype.pathCostEstimate = function(from, to) {
-    return 0;
-};
+    var assert = require('../Assert'),
+        AStar = require('../../src/pf/AStar');
 
-Workspace.prototype.traverseCost = function(from, to) {
-    return 0;
-};
+    function Workspace() {}
 
-Workspace.prototype.neighborsOf = function(node) {
-    throw new Error('not implemented!');
-};
+    Workspace.prototype.pathCostEstimate = function (from, to) {
+        return 0;
+    };
 
-describe('AStar', function() {
-    describe('#findPath(start, goal)', function() {
-        it('should return an array with only start if start is goal.', function() {
-            var start = {};
-            var astar = new AStar(new Workspace());
-            var path = astar.findPath(start, start);
-            assert.equal(1, path.length);
-            assert.equal(start[0], path[0][0]);
-            assert.equal(start[1], path[0][1]);
+    Workspace.prototype.traverseCost = function (from, to) {
+        return 0;
+    };
+
+    Workspace.prototype.neighborsOf = function (node) {
+        throw new Error('not implemented!');
+    };
+
+    describe('AStar', function () {
+        describe('#findPath(start, goal)', function () {
+            it('should return an array with only start if start is goal.', function () {
+                var start = {},
+                    astar = new AStar(new Workspace()),
+                    path = astar.findPath(start, start);
+                assert.equal(1, path.length);
+                assert.equal(start, path[0]);
+                assert.equal(start, path[0]);
+            });
+
+            it('should return an array with start and goal if start and goal are neighbors.', function () {
+                var start = {}, goal = {}, astar, path;
+
+                Workspace.prototype.neighborsOf = function (node) {
+                    if (node === start) {
+                        return [goal];
+                    } else if (node === goal) {
+                        return [start];
+                    }
+                };
+
+                astar = new AStar(new Workspace());
+                path = astar.findPath(start, goal);
+                assert.equal(2, path.length);
+                assert.equal(start, path[0]);
+                assert.equal(goal, path[1]);
+            });
+
+            it('should return an array with a sequence of point starting from start and ending by end.', function () {
+                var start = {}, goal = {}, pt1 = {}, pt2 = {}, pt3 = {}, astar, path;
+
+                Workspace.prototype.neighborsOf = function (node) {
+                    if (node === start) {
+                        return [pt1, pt2];
+                    } else if (node === goal) {
+                        return [pt3];
+                    } else if (node === pt1) {
+                        return [pt3, start];
+                    } else if (node === pt2) {
+                        return [pt3, start];
+                    } else if (node === pt3) {
+                        return [goal];
+                    }
+                };
+
+                Workspace.prototype.pathCostEstimate = function (from, to) {
+                    // pt1 is closer to pt3 than pt2 is.
+                    if (from === pt1 && to === pt3) {
+                        return 1;
+                    } else if (from === pt2 && to === pt2) {
+                        return 2;
+                    }
+                    return 0;
+                };
+
+                Workspace.prototype.traverseCost = function (from, to) {
+                    // pt1 is closer to pt3 than pt2 is.
+                    if (from === pt1 && to === pt3) {
+                        return 1;
+                    } else if (from === pt2 && to === pt2) {
+                        return 2;
+                    }
+                    return 0;
+                };
+
+                astar = new AStar(new Workspace());
+                path = astar.findPath(start, goal);
+                assert.equal(4, path.length);
+                assert.equal(start, path[0]);
+                assert.equal(pt2, path[1]);
+                assert.equal(pt3, path[2]);
+                assert.equal(goal, path[3]);
+            });
+
+
         });
-
-        it('should return an array with start and goal if start and goal are neighbors.', function() {
-            var start = {};
-            var goal = {};
-            
-            Workspace.prototype.neighborsOf = function(node) {
-                if (node === start) {
-                    return [ goal ];
-                } else if (node === goal) {
-                    return [ start ];
-                }
-            };
-            
-            var astar = new AStar(new Workspace());
-            var path = astar.findPath(start, goal);
-            assert.equal(2, path.length);
-            assert.equal(start[0], path[0][0]);
-            assert.equal(start[1], path[0][1]);
-            assert.equal(goal[0], path[1][0]);
-            assert.equal(goal[1], path[1][1]);
-        });
-
     });
-});
+
+}());

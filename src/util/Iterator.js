@@ -17,21 +17,23 @@ function Iterator(arr) {
     // length of `array` to iterate on.
     var length = arr.length,
 
-    // current index of this iterator.
+        // current index of this iterator.
         current = 0;
 
     //
     // Returns `true` if the iteration has more elements.
     //
-    this.hasNext = function() {
+    this.hasNext = function () {
         return current < length;
     };
 
     //
     // Returns the next element in the iteration or `undefined` if there is not more element.
     //
-    this.next = function() {
-        return arr[current++];
+    this.next = function () {
+        var result = arr[current];
+        current += 1;
+        return result;
     };
 
 }
