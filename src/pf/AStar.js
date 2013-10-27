@@ -99,7 +99,7 @@
         values.sort(function (node, otherNode) {
             return node.compareTo(otherNode);
         });
-        return values[0];
+        return values.get(0);
     };
 
     // expose API to Node.js

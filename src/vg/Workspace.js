@@ -1,9 +1,7 @@
 //
-// A workspace over which to compute the shortest path. It contains the start and target [points]('../geometry/Point.html') to be connected through the shortest path and all the connections between the points of the [visibility graph]('./VisibilityGraph.html'). The shortest path will therefore:
+// A workspace over which to compute the shortest path. The workspace is a graph that contains all the possible paths between the start and target [points]('./Point.html').
 //
-// - start at the `#startNode()`
-// - end at the `#targetNode()`
-// - go only through nodes that have been specified at construction
+// The nodes of the graph are [points]('./Point.html') and the connection between two points is a [great arc]('./GreatArc.html).
 //
 /*jslint node: true, indent: 4 */
 (function () {

@@ -31,6 +31,8 @@
     var Collections = require('./Collections'),
         // import Iterator.js
         Iterator = require('./Iterator'),
+        // import List.js
+        List = require('./List'),
         // import Set.js
         Set = require('./Set');
 
@@ -134,10 +136,10 @@
         };
 
         //
-        // Returns an `array` containing all of the values in this map.
+        // Returns a [list]('./List.html') containing all of the values in this map.
         //
         this.values = function () {
-            return values.slice(0);
+            return List.asList(values);
         };
 
     }

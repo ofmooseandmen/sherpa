@@ -93,6 +93,7 @@
             doNotCrossEdge;
 
         vertices.each(function (v) {
+            // FIXME : what should we do if point === v?
             edgeTo = new GreatArc(point, v);
             intersectOnce = false;
             it = doNotCrossEdges.iterator();

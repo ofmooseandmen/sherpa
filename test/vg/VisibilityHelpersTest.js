@@ -26,6 +26,17 @@
                 assert.equal(Coords.GOTEBORG, result.get(0).end());
             });
 
+            it('should return the great arc STOCKHOLM to GOTEBORG only', function () {
+                var polygon = new Polygon([Coords.MALMOE, Coords.YSTAD, Coords.GOTEBORG]),
+                    edges = new List(),
+                    result;
+                edges.add(new GreatArc(Coords.KALMAR, Coords.NORRKOPING));
+                result = VisibilityHelpers.visibleConnectionsPolygonToPoint(polygon, Coords.STOCKHOLM, edges);
+                assert.equal(1, result.size());
+                assert.equal(Coords.STOCKHOLM, result.get(0).start());
+                assert.equal(Coords.GOTEBORG, result.get(0).end());
+            });
+
             it('should return an empty list.', function () {
                 var polygon = new Polygon([Coords.MALMOE, Coords.YSTAD, Coords.GOTEBORG]),
                     edges = new List(),

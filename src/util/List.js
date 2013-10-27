@@ -69,6 +69,13 @@
             return Collections.indexOf(e, elements) !== -1;
         };
 
+        //
+        // Sorts the elements of this list according to the specified compartor function.
+        //
+        this.sort = function (c) {
+            elements.sort(c);
+        };
+
     }
 
     //

@@ -272,15 +272,15 @@
                     values, ok = {}, ov = {};
                 map.put(k, v);
                 values = map.values();
-                assert.equal(1, values.length);
-                assert.equal(v, values[0]);
+                assert.equal(1, values.size());
+                assert.equal(v, values.get(0));
                 assert.isTrue(map.containsKey(k));
                 ok = {};
                 ov = {};
                 map.put(ok, ov);
                 assert.isTrue(map.containsKey(k));
                 assert.isTrue(map.containsKey(ok));
-                assert.equal(1, values.length);
+                assert.equal(1, values.size());
             });
         });
 
