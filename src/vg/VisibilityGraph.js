@@ -1,4 +1,10 @@
+//
 // A visibility graph whose nodes are [points]('./Point.html') and visible connections are [great arcs](./GreatArc.html).
+// The visibility graph contains all user-defined obstacles. Each obstacle is an instance of a [polygon](./Polygon.html). Each time a new obstacle
+// is added or removed, the graph is recomputed. Thus, the graph keeps an up-to-date view of all the visible connections between all the vertices of the obstacles.
+//
+// The method `#workspace(Point, Point)` returns a workspace usable by an agent to compute the shortest path between the specified start and target points. In order to build a workspace, a new visibility graph is constructed by computing the visible connections between the start and target points and all the vertices of the obstacles. Those visible connections are then appended to the existing graph. The workspace therefore contains all the possible paths between the start and target points.
+//
 /*jslint node: true, indent: 4 */
 (function () {
 
@@ -64,17 +70,21 @@
 
         //
         // Adds the specified obstacle to the map of obstacles and recompute the visibility graph.
+        // The specified id must be unique amongst the obstacles.
         //
-        this.addObstacle = function (name, obstacle) {
-            obstacles.put(name, obstacle);
+        // If the graph previously
+        // contained an obstacle for the specified id, the old obstacle definition is replaced by the specified obstacle.
+        //
+        this.addObstacle = function (id, obstacle) {
+            obstacles.put(id, obstacle);
             edges = computeGraph(obstacles.values());
         };
 
         //
-        // Removes the obstacle corresponding to the specified name and recompute the visibility graph.
+        // Removes the obstacle corresponding to the specified id and recompute the visibility graph.
         //
-        this.removeObstacle = function (name) {
-            obstacles.remove(name);
+        this.removeObstacle = function (id) {
+            obstacles.remove(id);
             edges = computeGraph(obstacles.values());
         };
 
