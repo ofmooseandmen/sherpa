@@ -98,15 +98,27 @@ public final class TriangulationKernelTest {
         final List<Triangle> faces = new ArrayList<Triangle>();
         faces.add(f);
         final TriangulationKernel kernel = new TriangulationKernel(faces);
-        kernel.divide(f, EarthCoordinates.NORRKOPING);
+
+        final List<Triangle> actual = kernel.divide(f, EarthCoordinates.NORRKOPING);
         final Collection<Triangle> actualFaces = kernel.faces();
-        assertSize(3, actualFaces);
+
+        assertEquals(3, actualFaces.size());
+        assertEquals(3, actual.size());
+
         assertTrue(containsFace(new Triangle(EarthCoordinates.GOTEBORG, EarthCoordinates.MALMOE,
                 EarthCoordinates.NORRKOPING), actualFaces));
+        assertTrue(containsFace(new Triangle(EarthCoordinates.GOTEBORG, EarthCoordinates.MALMOE,
+                EarthCoordinates.NORRKOPING), actual));
+
         assertTrue(containsFace(new Triangle(EarthCoordinates.STOCKHOLM, EarthCoordinates.GOTEBORG,
                 EarthCoordinates.NORRKOPING), actualFaces));
+        assertTrue(containsFace(new Triangle(EarthCoordinates.STOCKHOLM, EarthCoordinates.GOTEBORG,
+                EarthCoordinates.NORRKOPING), actual));
+
         assertTrue(containsFace(new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.STOCKHOLM,
                 EarthCoordinates.NORRKOPING), actualFaces));
+        assertTrue(containsFace(new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.STOCKHOLM,
+                EarthCoordinates.NORRKOPING), actual));
     }
 
     @Test
@@ -129,7 +141,7 @@ public final class TriangulationKernelTest {
         final HalfEdge actual = kernel.edge(EarthCoordinates.KALMAR);
         assertNull(actual);
     }
-    
+
     @Test
     public final void face() throws GeometryException {
         final Triangle f = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.STOCKHOLM, EarthCoordinates.GOTEBORG);
@@ -140,7 +152,7 @@ public final class TriangulationKernelTest {
         assertTrue(actual.vertices().equals(f.vertices()));
 
     }
-    
+
     @Test
     public final void noFace() throws GeometryException {
         final Triangle f = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.STOCKHOLM, EarthCoordinates.GOTEBORG);
@@ -150,15 +162,6 @@ public final class TriangulationKernelTest {
         final Triangle actual = kernel.face(EarthCoordinates.UPPSALA);
         assertNull(actual);
 
-    }
-
-    private void assertSize(final int expected, Collection<Triangle> actualFaces) {
-        int actual = 0;
-        for (@SuppressWarnings("unused")
-        final Triangle face : actualFaces) {
-            actual++;
-        }
-        assertEquals(expected, actual);
     }
 
     private static boolean containsFace(final Triangle f, final Collection<Triangle> faces) {
