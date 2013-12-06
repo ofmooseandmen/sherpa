@@ -1,5 +1,7 @@
 # SHortEst Route PlAnner (sherpa)
 
+[![Build Status](https://api.travis-ci.org/ofmooseandmen/sherpa.png)](https://api.travis-ci.org/ofmooseandmen/sherpa.png)
+
 A planner of shortest routes on earth surface avoiding user defined obstacles.
 
 Based on:
