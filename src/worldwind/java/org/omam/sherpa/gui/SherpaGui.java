@@ -1,4 +1,4 @@
-package org.omam.gui;
+package org.omam.sherpa.gui;
 
 import gov.nasa.worldwind.Configuration;
 

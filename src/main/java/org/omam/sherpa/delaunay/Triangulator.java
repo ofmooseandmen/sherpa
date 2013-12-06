@@ -29,21 +29,13 @@ public final class Triangulator {
         kernel = new TriangulationKernel(boundaries);
     }
 
-    public final void tessellate(final int tessellationLevel) throws GeometryException {
-        int level = 0;
-        while (level < tessellationLevel) {
-            tessellateOnce();
-            level++;
-        }
-    }
-
-    // FIXME throw Exception if edge is crossing another constrained edge...
+    // FIXME : throw Exception if edge is crossing another constrained edge...
     public final void addConstrainedEdge(final GreatArc edge) throws GeometryException {
         if (!kernel.containsEdge(edge)) {
-            
+
             final PositionVector start = edge.start();
             final PositionVector end = edge.end();
-            
+
             Triangle face = kernel.intersectingFace(edge);
 
             final List<PositionVector> pu = new ArrayList<PositionVector>();
@@ -52,14 +44,14 @@ public final class Triangulator {
             final Collection<Triangle> toAdd = new ArrayList<Triangle>();
 
             PositionVector v = start;
-            
+
             while (!face.vertices().contains(end)) {
                 final Triangle fseg = kernel.opposedFace(face, v);
                 final PositionVector vseg = kernel.opposedVertex(face, fseg);
                 final HalfEdge link = kernel.link(face, fseg);
                 final PositionVector aboveEdge;
                 final PositionVector belowEdge;
-            
+
                 if (link.vertex().leftOf(start, end)) {
                     belowEdge = link.vertex();
                     aboveEdge = link.next().vertex();
@@ -67,7 +59,7 @@ public final class Triangulator {
                     belowEdge = link.next().vertex();
                     aboveEdge = link.vertex();
                 }
-                
+
                 /*
                  * if fseg contains end no need to update v as the loop will be exited anyway plus
                  * vseg may actually be end which causes leftOf to throw a CollinearPointsException
@@ -83,20 +75,20 @@ public final class Triangulator {
                         v = aboveEdge;
                     }
                 }
-                
+
                 if (!pl.contains(belowEdge)) {
                     pl.add(belowEdge);
                 }
-                
+
                 if (!pu.contains(aboveEdge)) {
                     pu.add(aboveEdge);
                 }
-                
+
                 toRemove.add(face);
                 face = fseg;
-            
+
             }
-            
+
             // remove face containing edge.end
             toRemove.add(face);
 
@@ -110,8 +102,7 @@ public final class Triangulator {
         kernel.constrain(edge);
     }
 
-    // FIXME : throw LocationOutsideTriangulationException instead of
-    // IllegalArgumentException
+    // FIXME : throw Exception instead of IllegalArgumentException
     public final void addPoint(final PositionVector v) throws GeometryException {
         if (kernel.containsVertex(v)) {
             /*
@@ -132,49 +123,19 @@ public final class Triangulator {
         }
     }
 
-    public final Collection<Triangle> faces() {
-        return kernel.faces();
-    }
-
     public final Collection<HalfEdge> edges() {
         return kernel.edges();
     }
 
-    private List<Triangle> triangulatePseudoPolygonDelaunay(final List<PositionVector> polygon, final GreatArc edge)
-            throws GeometryException {
-        final List<Triangle> result = new ArrayList<Triangle>();
-        if (!polygon.isEmpty()) {
-            int cIndex = 0;
-            PositionVector c = polygon.get(cIndex);
-            final PositionVector start = edge.start();
-            final PositionVector end = edge.end();
-            if (polygon.size() > 1) {
-                for (int index = 0; index < polygon.size(); index++) {
-                    final PositionVector v = polygon.get(index);
-                    if (new Triangle(start, end, c).circumcircleContains(v)) {
-                        c = v;
-                        cIndex = index;
-                    }
-                }
-                // divide P into Pe and Pd, giving P = Pe + {c} + Pd;
-                final List<PositionVector> pe = polygon.subList(0, cIndex);
-                final List<PositionVector> pd = polygon.subList(cIndex + 1, polygon.size());
-                result.addAll(triangulatePseudoPolygonDelaunay(pe, new GreatArc(start, c)));
-                result.addAll(triangulatePseudoPolygonDelaunay(pd, new GreatArc(c, end)));
-            }
-            result.add(new Triangle(start, end, c));
-        }
-        return result;
+    public final Collection<Triangle> faces() {
+        return kernel.faces();
     }
 
-    private void tessellateOnce() throws GeometryException {
-        final List<PositionVector> circumcentres = new ArrayList<>();
-        for (final Triangle face : kernel.faces()) {
-            circumcentres.add(face.circumcentre());
-        }
-
-        for (final PositionVector circumcentre : circumcentres) {
-            addPoint(circumcentre);
+    public final void tessellate(final int tessellationLevel) throws GeometryException {
+        int level = 0;
+        while (level < tessellationLevel) {
+            tessellateOnce();
+            level++;
         }
     }
 
@@ -205,6 +166,44 @@ public final class Triangulator {
                 stack.addFirst(swapped.get(1));
             }
         }
+    }
+
+    private void tessellateOnce() throws GeometryException {
+        final List<PositionVector> circumcentres = new ArrayList<>();
+        for (final Triangle face : kernel.faces()) {
+            circumcentres.add(face.circumcentre());
+        }
+
+        for (final PositionVector circumcentre : circumcentres) {
+            addPoint(circumcentre);
+        }
+    }
+
+    private List<Triangle> triangulatePseudoPolygonDelaunay(final List<PositionVector> polygon, final GreatArc edge)
+            throws GeometryException {
+        final List<Triangle> result = new ArrayList<Triangle>();
+        if (!polygon.isEmpty()) {
+            int cIndex = 0;
+            PositionVector c = polygon.get(cIndex);
+            final PositionVector start = edge.start();
+            final PositionVector end = edge.end();
+            if (polygon.size() > 1) {
+                for (int index = 0; index < polygon.size(); index++) {
+                    final PositionVector v = polygon.get(index);
+                    if (new Triangle(start, end, c).circumcircleContains(v)) {
+                        c = v;
+                        cIndex = index;
+                    }
+                }
+                // divide P into Pe and Pd, giving P = Pe + {c} + Pd;
+                final List<PositionVector> pe = polygon.subList(0, cIndex);
+                final List<PositionVector> pd = polygon.subList(cIndex + 1, polygon.size());
+                result.addAll(triangulatePseudoPolygonDelaunay(pe, new GreatArc(start, c)));
+                result.addAll(triangulatePseudoPolygonDelaunay(pd, new GreatArc(c, end)));
+            }
+            result.add(new Triangle(start, end, c));
+        }
+        return result;
     }
 
 }

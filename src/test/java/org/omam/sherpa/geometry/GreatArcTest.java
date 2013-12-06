@@ -7,21 +7,15 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.omam.sherpa.geometry.AntipodalEndPointsException;
-import org.omam.sherpa.geometry.CoordinatesConverter;
-import org.omam.sherpa.geometry.GeometryException;
-import org.omam.sherpa.geometry.GreatArc;
-import org.omam.sherpa.geometry.IdenticalEndPointsException;
-import org.omam.sherpa.geometry.PositionVector;
 
 public final class GreatArcTest {
-    
+
     @SuppressWarnings("unused")
     @Test(expected = AntipodalEndPointsException.class)
     public final void antipodal() throws GeometryException {
         new GreatArc(EarthCoordinates.OREBRO, EarthCoordinates.OREBRO.antipode());
     }
-    
+
     @SuppressWarnings("unused")
     @Test(expected = IdenticalEndPointsException.class)
     public final void sameEndPoints() throws GeometryException {
@@ -55,7 +49,7 @@ public final class GreatArcTest {
         assertFalse(ga1.intersects(ga2, true));
         assertNull(ga1.intersection(ga2, true));
     }
-    
+
     @Test
     public final void doNotIntersectSameGreatArc() throws GeometryException {
         final GreatArc ga1 = new GreatArc(EarthCoordinates.NORRKOPING, EarthCoordinates.STOCKHOLM);
@@ -67,7 +61,6 @@ public final class GreatArcTest {
         assertFalse(ga1.intersects(ga2, true));
         assertNull(ga1.intersection(ga2, true));
     }
-
 
     @Test
     public final void doNotIntersectSameGreatCircle() throws GeometryException {
@@ -109,6 +102,16 @@ public final class GreatArcTest {
         ga2 = new GreatArc(EarthCoordinates.GOTEBORG, EarthCoordinates.MALMOE);
         assertNotEquals(ga1, ga2);
         assertNotEquals(ga1.hashCode(), ga2.hashCode());
+    }
+
+    @Test
+    public final void notEqualsDifferentObjects() throws GeometryException {
+        assertFalse(new GreatArc(EarthCoordinates.GOTEBORG, EarthCoordinates.KALMAR).equals(new StringBuffer()));
+    }
+
+    @Test
+    public final void notEqualsNull() throws GeometryException {
+        assertFalse(new GreatArc(EarthCoordinates.GOTEBORG, EarthCoordinates.KALMAR).equals(null));
     }
 
     @Test

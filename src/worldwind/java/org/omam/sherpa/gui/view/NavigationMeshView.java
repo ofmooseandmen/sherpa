@@ -1,4 +1,4 @@
-package org.omam.gui.view;
+package org.omam.sherpa.gui.view;
 
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
@@ -12,7 +12,7 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
-import org.omam.gui.model.NavigationMeshModelListener;
+import org.omam.sherpa.gui.model.NavigationMeshModelListener;
 
 public final class NavigationMeshView implements NavigationMeshModelListener {
 
@@ -27,6 +27,11 @@ public final class NavigationMeshView implements NavigationMeshModelListener {
     public NavigationMeshView(final RenderableLayer navMeshLayer, final RenderableLayer constrainedEdgeLayer) {
         nmLayer = navMeshLayer;
         ceLayer = constrainedEdgeLayer;
+    }
+
+    @Override
+    public final void error(final String message) {
+        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     @Override
@@ -49,9 +54,14 @@ public final class NavigationMeshView implements NavigationMeshModelListener {
         ceLayer.firePropertyChange(evt);
     }
 
-    @Override
-    public final void error(final String message) {
-        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+    private static ShapeAttributes createConstrainedEdgeAttributes() {
+        final ShapeAttributes attributes = new BasicShapeAttributes();
+        attributes.setInteriorMaterial(Material.RED);
+        attributes.setOutlineMaterial(Material.RED);
+        attributes.setDrawOutline(true);
+        attributes.setOutlineOpacity(.95);
+        attributes.setOutlineWidth(5);
+        return attributes;
     }
 
     private static ShapeAttributes createNavMeshAttributes() {
@@ -61,16 +71,6 @@ public final class NavigationMeshView implements NavigationMeshModelListener {
         attributes.setOutlineOpacity(1);
         attributes.setOutlineWidth(2);
         attributes.setDrawInterior(false);
-        return attributes;
-    }
-
-    private static ShapeAttributes createConstrainedEdgeAttributes() {
-        final ShapeAttributes attributes = new BasicShapeAttributes();
-        attributes.setInteriorMaterial(Material.RED);
-        attributes.setOutlineMaterial(Material.RED);
-        attributes.setDrawOutline(true);
-        attributes.setOutlineOpacity(.95);
-        attributes.setOutlineWidth(5);
         return attributes;
     }
 

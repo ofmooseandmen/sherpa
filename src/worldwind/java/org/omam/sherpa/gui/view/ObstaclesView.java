@@ -1,4 +1,4 @@
-package org.omam.gui.view;
+package org.omam.sherpa.gui.view;
 
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
@@ -10,8 +10,8 @@ import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
 
-import org.omam.gui.model.ObstaclesModelListener;
-import org.omam.gui.model.SurfaceObstacle;
+import org.omam.sherpa.gui.model.ObstaclesModelListener;
+import org.omam.sherpa.gui.model.SurfaceObstacle;
 
 public final class ObstaclesView implements ObstaclesModelListener {
 

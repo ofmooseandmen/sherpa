@@ -1,4 +1,4 @@
-package org.omam.gui.model;
+package org.omam.sherpa.gui.model;
 
 import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.render.SurfacePolygon;

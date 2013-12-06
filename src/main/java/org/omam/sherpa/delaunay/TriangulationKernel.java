@@ -57,6 +57,26 @@ final class TriangulationKernel {
         return false;
     }
 
+    final List<Triangle> divide(final Triangle face, final PositionVector v) throws GeometryException {
+        /*
+         * face has vertices (v0, v1, v2). Create new triangles as f1 = (v0, v1, v), f2 = (v1, v2,
+         * v) and f3 = (v2, v0, v).
+         */
+        final List<Triangle> added = new ArrayList<Triangle>();
+        final PositionVector v0 = face.vertices().get(0);
+        final PositionVector v1 = face.vertices().get(1);
+        final PositionVector v2 = face.vertices().get(2);
+        added.add(new Triangle(v0, v1, v));
+        added.add(new Triangle(v1, v2, v));
+        added.add(new Triangle(v2, v0, v));
+
+        final Collection<Triangle> removed = Arrays.asList(face);
+        // commit 3 added faces and 1 removed face
+        commit(added, removed);
+
+        return added;
+    }
+
     final List<Triangle> divide(final Triangle f1, final Triangle f2, final PositionVector v) throws GeometryException {
         /*
          * f1 has vertices (v01, v1, v2) and f2 has vertices (v02, v1 and v2). Create new triangles
@@ -76,26 +96,6 @@ final class TriangulationKernel {
 
         final Collection<Triangle> removed = Arrays.asList(f1, f2);
         // commit 4 added faces and 2 removed faces
-        commit(added, removed);
-
-        return added;
-    }
-
-    final List<Triangle> divide(final Triangle face, final PositionVector v) throws GeometryException {
-        /*
-         * face has vertices (v0, v1, v2). Create new triangles as f1 = (v0, v1, v), f2 = (v1, v2,
-         * v) and f3 = (v2, v0, v).
-         */
-        final List<Triangle> added = new ArrayList<Triangle>();
-        final PositionVector v0 = face.vertices().get(0);
-        final PositionVector v1 = face.vertices().get(1);
-        final PositionVector v2 = face.vertices().get(2);
-        added.add(new Triangle(v0, v1, v));
-        added.add(new Triangle(v1, v2, v));
-        added.add(new Triangle(v2, v0, v));
-
-        final Collection<Triangle> removed = Arrays.asList(face);
-        // commit 3 added faces and 1 removed face
         commit(added, removed);
 
         return added;
@@ -128,7 +128,7 @@ final class TriangulationKernel {
      *             of this triangulation
      */
     final Triangle face(final PositionVector v) throws CollinearPointsException {
-        // worst method to find a point...
+        // FIXME : worst method to find a point...
         for (final Triangle t : faceEdges.keySet()) {
             if (t.contains(v)) {
                 return t;
@@ -172,29 +172,63 @@ final class TriangulationKernel {
 
     /**
      * Returns the {@link HalfEdge} he in the face <strong>f2</strong> that satisfies
-     * {@link HalfEdge#opposite()} belongs to f1.
+     * {@link HalfEdge#opposite()} belongs to f1 or <code>null</code> if no such half-edge exists.
+     * <p>
+     * {@link NullPointerException} is thrown if f1 does not belong to the triangulation.
      * 
      * @param f1 first face
      * @param f2 second face
      * @return the {@link HalfEdge} he in the face <strong>f2</strong> that satisfies
-     *         {@link HalfEdge#opposite()} belongs to f1
+     *         {@link HalfEdge#opposite()} belongs to f1 or <code>null</code> if no such half-edge
+     *         exists
      */
     final HalfEdge link(final Triangle f1, final Triangle f2) {
         HalfEdge he = faceEdges.get(f1);
-        while (!he.opposite().face().equals(f2)) {
-            he = he.next();
+        final int max = f1.vertices().size();
+        int count = 0;
+        boolean found = false;
+        while (count < max && !found) {
+            if (he.opposite() != null && he.opposite().face().equals(f2)) {
+                found = true;
+            } else {
+                he = he.next();
+            }
+            count++;
         }
-        return he.opposite();
+        return found ? he.opposite() : null;
     }
 
+    /**
+     * Returns the face opposed to the specified face <strong>that belongs to the
+     * triangulation</strong> w.r.t. to the specified vertex. Returns <code>null</code> if the
+     * specified vertex is not a vertex of the specified face or if no such face exists.
+     * <p>
+     * {@link NullPointerException} is thrown if the face does not belong to the triangulation.
+     * 
+     * @param face the face
+     * @param vertex the vertex - shall be a vertex of the face otherwise <code>null</code> is
+     *            returned
+     * @return the face opposed to the specified face <strong>that belongs to the
+     *         triangulation</strong> w.r.t. to the specified vertex. Returns <code>null</code> if
+     *         the specified vertex is not a vertex of the specified face or if no such face exists
+     */
     final Triangle opposedFace(final Triangle face, final PositionVector vertex) {
-        HalfEdge he = faceEdges.get(face);
-        while (!he.vertex().equals(vertex)) {
-            he = he.next();
+        final Triangle result;
+        if (face.vertices().contains(vertex)) {
+            HalfEdge he = faceEdges.get(face);
+            while (!he.vertex().equals(vertex)) {
+                he = he.next();
+            }
+            /*
+             * he is the half-edge starting at vertex, result is triangle of opposite of next
+             * half-edge
+             */
+            final HalfEdge opposite = he.next().opposite();
+            result = opposite == null ? null : opposite.face();
+        } else {
+            result = null;
         }
-        // he is the half-edge starting at p, result is triangle of opposite of
-        // next half-edge
-        return he.next().opposite().face();
+        return result;
     }
 
     /**
@@ -205,6 +239,7 @@ final class TriangulationKernel {
      * @param f2 second face, adjacent to first face
      * @return the {@link PositionVector vertex} of <strong>f2</strong> that does no belong to f1
      */
+    // FIXME : throws NullPointerException if link is null; better return null
     final PositionVector opposedVertex(final Triangle f1, final Triangle f2) {
         return link(f1, f2).previous().vertex();
     }

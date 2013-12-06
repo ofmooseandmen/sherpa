@@ -1,4 +1,4 @@
-package org.omam.gui.controller;
+package org.omam.sherpa.gui.controller;
 
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.event.SelectEvent;
@@ -10,9 +10,9 @@ import gov.nasa.worldwind.render.SurfacePolygon;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import org.omam.gui.model.NavigationMeshModel;
-import org.omam.gui.model.ObstacleEditor;
-import org.omam.gui.model.SurfaceObstacle;
+import org.omam.sherpa.gui.model.NavigationMeshModel;
+import org.omam.sherpa.gui.model.ObstacleEditor;
+import org.omam.sherpa.gui.model.SurfaceObstacle;
 
 public final class WorldWindowController extends MouseAdapter implements SelectListener {
 

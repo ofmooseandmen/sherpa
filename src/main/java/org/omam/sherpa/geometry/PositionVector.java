@@ -109,7 +109,7 @@ public final class PositionVector {
         if (Math.abs(stp) < CARTESIAN_EPSILON) {
             throw new CollinearPointsException(this, v1, v2);
         }
-        return stp > CARTESIAN_EPSILON; // || floatEqual(stp, 0.0);
+        return stp > CARTESIAN_EPSILON;
     }
 
     /**
@@ -138,18 +138,18 @@ public final class PositionVector {
     @Override
     public final boolean equals(final Object o) {
         final boolean result;
-        if (this == o) {
+        if (o == null) {
+            result = false;
+        } else if (this == o) {
             result = true;
         } else if (PositionVector.class.isInstance(o)) {
-            final PositionVector ov = ((PositionVector) o);
+            final PositionVector ov = (PositionVector) o;
             if (!equals(x, ov.x)) {
                 result = false;
             } else if (!equals(y, ov.y)) {
                 result = false;
-            } else if (!equals(z, ov.z)) {
-                result = false;
             } else {
-                result = true;
+                result = equals(z, ov.z);
             }
         } else {
             result = false;

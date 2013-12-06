@@ -1,4 +1,4 @@
-package org.omam.gui;
+package org.omam.sherpa.gui;
 
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.avlist.AVKey;
@@ -12,17 +12,17 @@ import java.util.List;
 
 import javax.swing.JFrame;
 
-import org.omam.gui.controller.WorldWindowController;
-import org.omam.gui.model.NavigationMeshModel;
-import org.omam.gui.model.NavigationMeshModelListener;
-import org.omam.gui.model.ObstacleEditor;
-import org.omam.gui.model.ObstacleEditorListener;
-import org.omam.gui.model.ObstaclesModel;
-import org.omam.gui.model.ObstaclesModelListener;
-import org.omam.gui.view.NavigationMeshView;
-import org.omam.gui.view.ObstacleEditorView;
-import org.omam.gui.view.ObstaclesView;
 import org.omam.sherpa.geometry.GeometryException;
+import org.omam.sherpa.gui.controller.WorldWindowController;
+import org.omam.sherpa.gui.model.NavigationMeshModel;
+import org.omam.sherpa.gui.model.NavigationMeshModelListener;
+import org.omam.sherpa.gui.model.ObstacleEditor;
+import org.omam.sherpa.gui.model.ObstacleEditorListener;
+import org.omam.sherpa.gui.model.ObstaclesModel;
+import org.omam.sherpa.gui.model.ObstaclesModelListener;
+import org.omam.sherpa.gui.view.NavigationMeshView;
+import org.omam.sherpa.gui.view.ObstacleEditorView;
+import org.omam.sherpa.gui.view.ObstaclesView;
 
 final class GuiFrame extends JFrame {
 

@@ -1,3 +1,4 @@
+package org.omam.sherpa.gui.model;
 //package org.omam.gui.model;
 //
 //import gov.nasa.worldwind.WorldWindow;

@@ -1,4 +1,5 @@
-package org.omam.gui.model;
+package org.omam.sherpa.gui.model;
+
 
 
 public interface ObstacleEditorListener {

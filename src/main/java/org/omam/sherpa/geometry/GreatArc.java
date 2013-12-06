@@ -79,13 +79,17 @@ public final class GreatArc {
     }
 
     @Override
-    public final boolean equals(final Object obj) {
+    public final boolean equals(final Object o) {
         final boolean result;
-        if (this == obj) {
+        if (o == null) {
+            result = false;
+        } else if (this == o) {
             result = true;
-        } else {
-            final GreatArc other = (GreatArc) obj;
+        } else if (GreatArc.class.isInstance(o)) {
+            final GreatArc other = (GreatArc) o;
             result = start.equals(other.start) && end.equals(other.end);
+        } else {
+            result = false;
         }
         return result;
     }
@@ -175,7 +179,7 @@ public final class GreatArc {
             return new GreatArc(end, start);
         } catch (final GeometryException e) {
             // impossible since start and end have been checked.
-            throw new Error("Something went very wrong...");
+            throw new IllegalStateException("Something went very wrong...", e);
         }
     }
 
@@ -188,10 +192,12 @@ public final class GreatArc {
         return "GreatArc [" + start + " to " + end + "]";
     }
 
-    //
-    // Returns the common points between this great arc and the other specified
-    // great arc.
-    //
+    /**
+     * Returns the common points between this great arc and the other specified great arc.
+     * 
+     * @param o the other great arc
+     * @return an array containing <code>0</code>, <code>1</code> or <code>2</code> common points.
+     */
     private PositionVector[] commonPoints(final GreatArc o) {
         final List<PositionVector> result = new ArrayList<PositionVector>();
         if (start.equals(o.start) || start.equals(o.end)) {

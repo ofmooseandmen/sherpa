@@ -1,4 +1,4 @@
-package org.omam.gui.view;
+package org.omam.sherpa.gui.view;
 
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
@@ -10,8 +10,8 @@ import gov.nasa.worldwind.render.SurfacePolygon;
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 
-import org.omam.gui.model.ObstacleEditorListener;
-import org.omam.gui.model.SurfaceObstacle;
+import org.omam.sherpa.gui.model.ObstacleEditorListener;
+import org.omam.sherpa.gui.model.SurfaceObstacle;
 
 public final class ObstacleEditorView implements ObstacleEditorListener {
 
@@ -21,11 +21,6 @@ public final class ObstacleEditorView implements ObstacleEditorListener {
 
     public ObstacleEditorView(final RenderableLayer aLayer) {
         layer = aLayer;
-    }
-
-    @Override
-    public final void obstacleCreated(final SurfaceObstacle obstacle) {
-        obstacleChanged(obstacle);
     }
 
     @Override
@@ -44,6 +39,11 @@ public final class ObstacleEditorView implements ObstacleEditorListener {
     public final void obstacleCommitted() {
         layer.removeAllRenderables();
         refresh(null);
+    }
+
+    @Override
+    public final void obstacleCreated(final SurfaceObstacle obstacle) {
+        obstacleChanged(obstacle);
     }
 
     private void refresh(final Object newValue) {

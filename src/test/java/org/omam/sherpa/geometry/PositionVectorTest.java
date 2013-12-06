@@ -41,6 +41,27 @@ public final class PositionVectorTest {
     }
     
     @Test
+    public final void notEqualsDifferentX() {
+        final PositionVector v1 = new PositionVector(1, 0, 0);
+        final PositionVector v2 = new PositionVector(2, 0, 0);
+        assertFalse(v1.equals(v2));
+    }
+    
+    @Test
+    public final void notEqualsDifferentY() {
+        final PositionVector v1 = new PositionVector(1, 1, 0);
+        final PositionVector v2 = new PositionVector(1, 0, 0);
+        assertFalse(v1.equals(v2));
+    }
+    
+    @Test
+    public final void notEqualsDifferentZ() {
+        final PositionVector v1 = new PositionVector(2, 0.6, 1.1);
+        final PositionVector v2 = new PositionVector(2, 0.6, 1.01);
+        assertFalse(v1.equals(v2));
+    }
+    
+    @Test
     public final void notEqualsDifferentValueEpsilon() {
         final PositionVector v1 = EarthCoordinates.KATRINEHOLM;
         final PositionVector v2 = EarthCoordinates.KATRINEHOLM.scale(1.000001);
@@ -50,6 +71,11 @@ public final class PositionVectorTest {
     @Test
     public final void notEqualsDifferentObjects() {
         assertFalse(EarthCoordinates.LUND.equals(new StringBuffer()));
+    }
+    
+    @Test
+    public final void notEqualsNull() {
+        assertFalse(EarthCoordinates.LUND.equals(null));
     }
     
     @Test
