@@ -169,7 +169,7 @@ public final class Triangulator {
     }
 
     private void tessellateOnce() throws GeometryException {
-        final List<PositionVector> circumcentres = new ArrayList<>();
+        final List<PositionVector> circumcentres = new ArrayList<PositionVector>();
         for (final Triangle face : kernel.faces()) {
             circumcentres.add(face.circumcentre());
         }
