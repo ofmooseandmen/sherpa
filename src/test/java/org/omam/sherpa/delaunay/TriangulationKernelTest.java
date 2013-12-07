@@ -19,6 +19,17 @@ import org.omam.sherpa.geometry.Triangle;
 public final class TriangulationKernelTest {
 
     @Test
+    public final void containsEdge() throws GeometryException {
+        final Triangle f1 = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.KALMAR, EarthCoordinates.GOTEBORG);
+        final Triangle f2 = new Triangle(EarthCoordinates.KALMAR, EarthCoordinates.STOCKHOLM, EarthCoordinates.GOTEBORG);
+        final List<Triangle> faces = new ArrayList<Triangle>();
+        faces.add(f1);
+        faces.add(f2);
+        final TriangulationKernel kernel = new TriangulationKernel(faces);
+        assertTrue(kernel.containsEdge(new GreatArc(EarthCoordinates.STOCKHOLM, EarthCoordinates.GOTEBORG)));
+    }
+
+    @Test
     public final void containsVertex() throws GeometryException {
         final Triangle f1 = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.KALMAR, EarthCoordinates.GOTEBORG);
         final Triangle f2 = new Triangle(EarthCoordinates.KALMAR, EarthCoordinates.STOCKHOLM, EarthCoordinates.GOTEBORG);
@@ -93,6 +104,17 @@ public final class TriangulationKernelTest {
     }
 
     @Test
+    public final void doesNotContainEdge() throws GeometryException {
+        final Triangle f1 = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.KALMAR, EarthCoordinates.GOTEBORG);
+        final Triangle f2 = new Triangle(EarthCoordinates.KALMAR, EarthCoordinates.STOCKHOLM, EarthCoordinates.GOTEBORG);
+        final List<Triangle> faces = new ArrayList<Triangle>();
+        faces.add(f1);
+        faces.add(f2);
+        final TriangulationKernel kernel = new TriangulationKernel(faces);
+        assertFalse(kernel.containsEdge(new GreatArc(EarthCoordinates.MALMOE, EarthCoordinates.STOCKHOLM)));
+    }
+
+    @Test
     public final void doesNotContainVertex() throws GeometryException {
         final Triangle f1 = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.KALMAR, EarthCoordinates.GOTEBORG);
         final Triangle f2 = new Triangle(EarthCoordinates.KALMAR, EarthCoordinates.STOCKHOLM, EarthCoordinates.GOTEBORG);
@@ -126,6 +148,23 @@ public final class TriangulationKernelTest {
     }
 
     @Test
+    public final void intersectingFace() throws GeometryException {
+        final Triangle f1 = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.KALMAR, EarthCoordinates.GOTEBORG);
+        final Triangle f2 = new Triangle(EarthCoordinates.KALMAR, EarthCoordinates.STOCKHOLM, EarthCoordinates.GOTEBORG);
+        final Triangle f3 = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.GOTEBORG, EarthCoordinates.ROSKILDE);
+        final Triangle f4 = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.KALMAR, EarthCoordinates.PERTH);
+        final List<Triangle> faces = new ArrayList<Triangle>();
+        faces.add(f1);
+        faces.add(f2);
+        faces.add(f3);
+        faces.add(f4);
+        final TriangulationKernel kernel = new TriangulationKernel(faces);
+        final Triangle actual = kernel.intersectingFace(new GreatArc(EarthCoordinates.MALMOE,
+                EarthCoordinates.STOCKHOLM));
+        assertTrue(f1.equals(actual));
+    }
+
+    @Test
     public final void noEdge() throws GeometryException {
         final Triangle f = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.STOCKHOLM, EarthCoordinates.GOTEBORG);
         final List<Triangle> faces = new ArrayList<Triangle>();
@@ -144,6 +183,21 @@ public final class TriangulationKernelTest {
         final Triangle actual = kernel.face(EarthCoordinates.UPPSALA);
         assertNull(actual);
 
+    }
+
+    @Test
+    public final void noIntersectingFace() throws GeometryException {
+        final Triangle f1 = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.KALMAR, EarthCoordinates.GOTEBORG);
+        final Triangle f2 = new Triangle(EarthCoordinates.KALMAR, EarthCoordinates.STOCKHOLM, EarthCoordinates.GOTEBORG);
+        final Triangle f3 = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.GOTEBORG, EarthCoordinates.ROSKILDE);
+        final Triangle f4 = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.KALMAR, EarthCoordinates.PERTH);
+        final List<Triangle> faces = new ArrayList<Triangle>();
+        faces.add(f1);
+        faces.add(f2);
+        faces.add(f3);
+        faces.add(f4);
+        final TriangulationKernel kernel = new TriangulationKernel(faces);
+        assertNull(kernel.intersectingFace(new GreatArc(EarthCoordinates.LUND, EarthCoordinates.STOCKHOLM)));
     }
 
     @Test
@@ -224,6 +278,28 @@ public final class TriangulationKernelTest {
         assertEquals(EarthCoordinates.STOCKHOLM, second.vertices().get(0));
         assertEquals(EarthCoordinates.MALMOE, second.vertices().get(1));
         assertEquals(EarthCoordinates.KALMAR, second.vertices().get(2));
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public final void unmodifiableEdges() throws GeometryException {
+        final Triangle f1 = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.KALMAR, EarthCoordinates.GOTEBORG);
+        final Triangle f2 = new Triangle(EarthCoordinates.KALMAR, EarthCoordinates.STOCKHOLM, EarthCoordinates.GOTEBORG);
+        final List<Triangle> faces = new ArrayList<Triangle>();
+        faces.add(f1);
+        faces.add(f2);
+        final TriangulationKernel kernel = new TriangulationKernel(faces);
+        kernel.edges().add(new HalfEdge(null, null));
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public final void unmodifiableFaces() throws GeometryException {
+        final Triangle f1 = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.KALMAR, EarthCoordinates.GOTEBORG);
+        final Triangle f2 = new Triangle(EarthCoordinates.KALMAR, EarthCoordinates.STOCKHOLM, EarthCoordinates.GOTEBORG);
+        final List<Triangle> faces = new ArrayList<Triangle>();
+        faces.add(f1);
+        faces.add(f2);
+        final TriangulationKernel kernel = new TriangulationKernel(faces);
+        kernel.faces().add(f1);
     }
 
     private static boolean containsFace(final Triangle f, final Collection<Triangle> faces) {

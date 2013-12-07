@@ -144,7 +144,7 @@ final class TriangulationKernel {
     /**
      * Returns the face that contains {@link GreatArc#start()} as one of its vertices and is cut by
      * edge Returns <code>null</code> if no such face exists. Specified edge shall not exist in this
-     * navigation mesh.
+     * triangulation.
      * 
      * @param edge the edge
      * @return the face that contains {@link GreatArc#start()} as one of its vertices and is cut by

@@ -5,20 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.omam.sherpa.geometry.CoordinatesConverter;
-import org.omam.sherpa.geometry.GeometryException;
-import org.omam.sherpa.geometry.GreatArc;
-import org.omam.sherpa.geometry.Triangle;
 
 public class TriangleTest {
-
-    @Test
-    public final void orient() throws GeometryException {
-        final Triangle t = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.GOTEBORG, EarthCoordinates.STOCKHOLM);
-        assertEquals(EarthCoordinates.STOCKHOLM, t.vertices().get(0));
-        assertEquals(EarthCoordinates.GOTEBORG, t.vertices().get(1));
-        assertEquals(EarthCoordinates.MALMOE, t.vertices().get(2));
-    }
 
     @Test
     public final void alreadyOriented() throws GeometryException {
@@ -26,39 +14,6 @@ public class TriangleTest {
         assertEquals(EarthCoordinates.MALMOE, t.vertices().get(0));
         assertEquals(EarthCoordinates.STOCKHOLM, t.vertices().get(1));
         assertEquals(EarthCoordinates.GOTEBORG, t.vertices().get(2));
-    }
-
-    @Test
-    public final void edges() throws GeometryException {
-        final Triangle t = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.STOCKHOLM, EarthCoordinates.GOTEBORG);
-        assertEquals(EarthCoordinates.MALMOE, t.edges().get(0).start());
-        assertEquals(EarthCoordinates.STOCKHOLM, t.edges().get(0).end());
-        assertEquals(EarthCoordinates.STOCKHOLM, t.edges().get(1).start());
-        assertEquals(EarthCoordinates.GOTEBORG, t.edges().get(1).end());
-        assertEquals(EarthCoordinates.GOTEBORG, t.edges().get(2).start());
-        assertEquals(EarthCoordinates.MALMOE, t.edges().get(2).end());
-    }
-
-    @Test
-    public final void opposedEdge() throws GeometryException {
-        final Triangle t = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.STOCKHOLM, EarthCoordinates.GOTEBORG);
-        GreatArc opposedEdge = t.opposedEdge(EarthCoordinates.MALMOE);
-        assertEquals(EarthCoordinates.STOCKHOLM, opposedEdge.start());
-        assertEquals(EarthCoordinates.GOTEBORG, opposedEdge.end());
-
-        opposedEdge = t.opposedEdge(EarthCoordinates.STOCKHOLM);
-        assertEquals(EarthCoordinates.GOTEBORG, opposedEdge.start());
-        assertEquals(EarthCoordinates.MALMOE, opposedEdge.end());
-
-        opposedEdge = t.opposedEdge(EarthCoordinates.GOTEBORG);
-        assertEquals(EarthCoordinates.MALMOE, opposedEdge.start());
-        assertEquals(EarthCoordinates.STOCKHOLM, opposedEdge.end());
-    }
-
-    @Test(expected = GeometryException.class)
-    public final void opposedEdgeFails() throws GeometryException {
-        final Triangle t = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.STOCKHOLM, EarthCoordinates.GOTEBORG);
-        t.opposedEdge(EarthCoordinates.LUND);
     }
 
     @Test
@@ -120,10 +75,63 @@ public class TriangleTest {
         assertFalse(t.contains(EarthCoordinates.KALMAR));
     }
 
+    @Test
+    public final void edges() throws GeometryException {
+        final Triangle t = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.STOCKHOLM, EarthCoordinates.GOTEBORG);
+        assertEquals(EarthCoordinates.MALMOE, t.edges().get(0).start());
+        assertEquals(EarthCoordinates.STOCKHOLM, t.edges().get(0).end());
+        assertEquals(EarthCoordinates.STOCKHOLM, t.edges().get(1).start());
+        assertEquals(EarthCoordinates.GOTEBORG, t.edges().get(1).end());
+        assertEquals(EarthCoordinates.GOTEBORG, t.edges().get(2).start());
+        assertEquals(EarthCoordinates.MALMOE, t.edges().get(2).end());
+    }
+
     @Test(expected = CollinearPointsException.class)
     public final void onEdge() throws GeometryException {
         final Triangle t = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.GOTEBORG, EarthCoordinates.STOCKHOLM);
         t.contains(new GreatArc(EarthCoordinates.MALMOE, EarthCoordinates.GOTEBORG).midPoint());
+    }
+
+    @Test
+    public final void opposedEdge() throws GeometryException {
+        final Triangle t = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.STOCKHOLM, EarthCoordinates.GOTEBORG);
+        GreatArc opposedEdge = t.opposedEdge(EarthCoordinates.MALMOE);
+        assertEquals(EarthCoordinates.STOCKHOLM, opposedEdge.start());
+        assertEquals(EarthCoordinates.GOTEBORG, opposedEdge.end());
+
+        opposedEdge = t.opposedEdge(EarthCoordinates.STOCKHOLM);
+        assertEquals(EarthCoordinates.GOTEBORG, opposedEdge.start());
+        assertEquals(EarthCoordinates.MALMOE, opposedEdge.end());
+
+        opposedEdge = t.opposedEdge(EarthCoordinates.GOTEBORG);
+        assertEquals(EarthCoordinates.MALMOE, opposedEdge.start());
+        assertEquals(EarthCoordinates.STOCKHOLM, opposedEdge.end());
+    }
+
+    @Test(expected = GeometryException.class)
+    public final void opposedEdgeFails() throws GeometryException {
+        final Triangle t = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.STOCKHOLM, EarthCoordinates.GOTEBORG);
+        t.opposedEdge(EarthCoordinates.LUND);
+    }
+
+    @Test
+    public final void orient() throws GeometryException {
+        final Triangle t = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.GOTEBORG, EarthCoordinates.STOCKHOLM);
+        assertEquals(EarthCoordinates.STOCKHOLM, t.vertices().get(0));
+        assertEquals(EarthCoordinates.GOTEBORG, t.vertices().get(1));
+        assertEquals(EarthCoordinates.MALMOE, t.vertices().get(2));
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public final void unmodifiableEdges() throws GeometryException {
+        final Triangle t = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.KALMAR, EarthCoordinates.GOTEBORG);
+        t.edges().add(new GreatArc(EarthCoordinates.MALMOE, EarthCoordinates.KALMAR));
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public final void unmodifiableVertices() throws GeometryException {
+        final Triangle t = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.KALMAR, EarthCoordinates.GOTEBORG);
+        t.vertices().add(EarthCoordinates.KALMAR);
     }
 
 }
