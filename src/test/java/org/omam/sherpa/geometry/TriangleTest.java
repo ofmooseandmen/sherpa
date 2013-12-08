@@ -78,12 +78,12 @@ public class TriangleTest {
     @Test
     public final void edges() throws GeometryException {
         final Triangle t = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.STOCKHOLM, EarthCoordinates.GOTEBORG);
-        assertEquals(EarthCoordinates.MALMOE, t.edges().get(0).start());
-        assertEquals(EarthCoordinates.STOCKHOLM, t.edges().get(0).end());
-        assertEquals(EarthCoordinates.STOCKHOLM, t.edges().get(1).start());
-        assertEquals(EarthCoordinates.GOTEBORG, t.edges().get(1).end());
-        assertEquals(EarthCoordinates.GOTEBORG, t.edges().get(2).start());
-        assertEquals(EarthCoordinates.MALMOE, t.edges().get(2).end());
+        assertEquals(EarthCoordinates.MALMOE, t.edges().get(0).from());
+        assertEquals(EarthCoordinates.STOCKHOLM, t.edges().get(0).to());
+        assertEquals(EarthCoordinates.STOCKHOLM, t.edges().get(1).from());
+        assertEquals(EarthCoordinates.GOTEBORG, t.edges().get(1).to());
+        assertEquals(EarthCoordinates.GOTEBORG, t.edges().get(2).from());
+        assertEquals(EarthCoordinates.MALMOE, t.edges().get(2).to());
     }
 
     @Test(expected = CollinearPointsException.class)
@@ -96,16 +96,16 @@ public class TriangleTest {
     public final void opposedEdge() throws GeometryException {
         final Triangle t = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.STOCKHOLM, EarthCoordinates.GOTEBORG);
         GreatArc opposedEdge = t.opposedEdge(EarthCoordinates.MALMOE);
-        assertEquals(EarthCoordinates.STOCKHOLM, opposedEdge.start());
-        assertEquals(EarthCoordinates.GOTEBORG, opposedEdge.end());
+        assertEquals(EarthCoordinates.STOCKHOLM, opposedEdge.from());
+        assertEquals(EarthCoordinates.GOTEBORG, opposedEdge.to());
 
         opposedEdge = t.opposedEdge(EarthCoordinates.STOCKHOLM);
-        assertEquals(EarthCoordinates.GOTEBORG, opposedEdge.start());
-        assertEquals(EarthCoordinates.MALMOE, opposedEdge.end());
+        assertEquals(EarthCoordinates.GOTEBORG, opposedEdge.from());
+        assertEquals(EarthCoordinates.MALMOE, opposedEdge.to());
 
         opposedEdge = t.opposedEdge(EarthCoordinates.GOTEBORG);
-        assertEquals(EarthCoordinates.MALMOE, opposedEdge.start());
-        assertEquals(EarthCoordinates.STOCKHOLM, opposedEdge.end());
+        assertEquals(EarthCoordinates.MALMOE, opposedEdge.from());
+        assertEquals(EarthCoordinates.STOCKHOLM, opposedEdge.to());
     }
 
     @Test(expected = GeometryException.class)

@@ -15,7 +15,7 @@ public final class PositionVector {
     private final double z;
 
     /**
-     * Constructor
+     * Constructs a new <code>PositionVector</code> from the specified components.
      * 
      * @param aX x component of the vector
      * @param aY y component of the vector
@@ -25,114 +25,6 @@ public final class PositionVector {
         x = aX;
         y = aY;
         z = aZ;
-    }
-
-    /**
-     * Returns the norm of this vector - i.e. it's length.
-     * 
-     * @return the norm of this vector
-     */
-    final double norm() {
-        return Math.sqrt(Math.pow(x, 2.0) + Math.pow(y, 2.0) + Math.pow(z, 2.0));
-    }
-
-    /**
-     * Returns a new vector resulting from the cross product of this vector and the specified other
-     * vector: <code>this &times; o</code>.
-     * 
-     * @param o the other vector
-     * @return a new vector resulting the cross product of this vector and the specified other
-     *         vector
-     */
-    final PositionVector cross(final PositionVector o) {
-        final double rX = y * o.z - z * o.y;
-        final double rY = z * o.x - x * o.z;
-        final double rZ = x * o.y - y * o.x;
-        return new PositionVector(rX, rY, rZ);
-    }
-
-    /**
-     * Returns the dot product of this vector and the specified other vector:
-     * <code>this &middot; o</code>.
-     * 
-     * @param o the other vector
-     * @return the dot product of this vector and the specified other vector
-     */
-    final double dot(final PositionVector o) {
-        return x * o.x + y * o.y + z * o.z;
-    }
-
-    /**
-     * Returns a new vector parallel to this vector with norm equals to <code>1</code>.
-     * 
-     * @return a new vector parallel to this vector with norm equals to <code>1</code>
-     */
-    final PositionVector normalize() {
-        final double scale = 1.0 / norm();
-        return scale(scale);
-    }
-
-    /**
-     * Returns a new vector resulting from the scalar multiplication of each component of this
-     * vector by the specified scalar.
-     * 
-     * @param s the scalar
-     * @return a new vector resulting from the scalar multiplication of each component of this
-     *         vector by the specified scalar
-     */
-    final PositionVector scale(final double s) {
-        return new PositionVector(x * s, y * s, z * s);
-    }
-
-    final PositionVector add(final PositionVector o) {
-        return new PositionVector(x + o.x, y + o.y, z + o.z);
-    }
-
-    // subtract
-    final PositionVector subtract(final PositionVector o) {
-        return new PositionVector(x - o.x, y - o.y, z - o.z);
-    }
-
-    /**
-     * Returns <code>true</code> if and only if this vector is on the left of the line defined by
-     * the specified two other vectors.
-     * 
-     * @param v1 first vector
-     * @param v2 second vector
-     * @return <code>true</code> if and only if this vector is on the left of the line defined by
-     *         the specified two other vectors
-     * @throws CollinearPointsException if this vector and the two specified vectors are collinear
-     */
-    public final boolean leftOf(final PositionVector v1, final PositionVector v2) throws CollinearPointsException {
-        // sign of scalar triple product must be +
-        final double stp = dot(v1.cross(v2));
-        if (Math.abs(stp) < CARTESIAN_EPSILON) {
-            throw new CollinearPointsException(this, v1, v2);
-        }
-        return stp > CARTESIAN_EPSILON;
-    }
-
-    /**
-     * Returns the antipodal vector of this vector - i.e. the vector on the surface of the sphere
-     * which is diametrically opposite to this vector.
-     * 
-     * @return the antipodal vector of this vector
-     */
-    final PositionVector antipode() {
-        return scale(-1.0);
-    }
-
-    /**
-     * Returns the surface distance (length of geodesic) <strong>in radians</strong> assuming a
-     * <strong>spherical model</strong> from this vector to the specified position vector.
-     */
-    final double distance(final PositionVector to) {
-        return Math.atan2(cross(to).norm(), dot(to));
-    }
-
-    @Override
-    public final String toString() {
-        return "[" + x + ", " + y + ", " + z + "]";
     }
 
     @Override
@@ -161,17 +53,121 @@ public final class PositionVector {
     public final int hashCode() {
         final int prime = 31;
         int result = 1;
-        int xprecision = (int) (x / CARTESIAN_EPSILON);
-        int yprecision = (int) (y / CARTESIAN_EPSILON);
-        int zprecision = (int) (z / CARTESIAN_EPSILON);
+        final int xprecision = (int) (x / CARTESIAN_EPSILON);
+        final int yprecision = (int) (y / CARTESIAN_EPSILON);
+        final int zprecision = (int) (z / CARTESIAN_EPSILON);
         result = prime * result + xprecision;
         result = prime * result + yprecision;
         result = prime * result + zprecision;
         return result;
     }
 
-    final double z() {
-        return z;
+    /**
+     * Returns <code>true</code> if and only if this vector is on the left of the line defined by
+     * the specified two other vectors.
+     * 
+     * @param v1 first vector
+     * @param v2 second vector
+     * @return <code>true</code> if and only if this vector is on the left of the line defined by
+     *         the specified two other vectors
+     * @throws CollinearPointsException if this vector and the two specified vectors are collinear
+     */
+    public final boolean leftOf(final PositionVector v1, final PositionVector v2) throws CollinearPointsException {
+        // sign of scalar triple product must be +
+        final double stp = dot(v1.cross(v2));
+        if (Math.abs(stp) < CARTESIAN_EPSILON) {
+            throw new CollinearPointsException(this, v1, v2);
+        }
+        return stp > CARTESIAN_EPSILON;
+    }
+
+    @Override
+    public final String toString() {
+        return "[" + x + ", " + y + ", " + z + "]";
+    }
+
+    final PositionVector add(final PositionVector o) {
+        return new PositionVector(x + o.x, y + o.y, z + o.z);
+    }
+
+    /**
+     * Returns the antipodal vector of this vector - i.e. the vector on the surface of the sphere
+     * which is diametrically opposite to this vector.
+     * 
+     * @return the antipodal vector of this vector
+     */
+    final PositionVector antipode() {
+        return scale(-1.0);
+    }
+
+    /**
+     * Returns a new vector resulting from the cross product of this vector and the specified other
+     * vector: <code>this &times; o</code>.
+     * 
+     * @param o the other vector
+     * @return a new vector resulting the cross product of this vector and the specified other
+     *         vector
+     */
+    final PositionVector cross(final PositionVector o) {
+        final double rX = y * o.z - z * o.y;
+        final double rY = z * o.x - x * o.z;
+        final double rZ = x * o.y - y * o.x;
+        return new PositionVector(rX, rY, rZ);
+    }
+
+    /**
+     * Returns the surface distance (length of geodesic) <strong>in radians</strong> assuming a
+     * <strong>spherical model</strong> from this vector to the specified position vector.
+     */
+    final double distance(final PositionVector to) {
+        return Math.atan2(cross(to).norm(), dot(to));
+    }
+
+    /**
+     * Returns the dot product of this vector and the specified other vector:
+     * <code>this &middot; o</code>.
+     * 
+     * @param o the other vector
+     * @return the dot product of this vector and the specified other vector
+     */
+    final double dot(final PositionVector o) {
+        return x * o.x + y * o.y + z * o.z;
+    }
+
+    /**
+     * Returns the norm of this vector - i.e. it's length.
+     * 
+     * @return the norm of this vector
+     */
+    final double norm() {
+        return Math.sqrt(Math.pow(x, 2.0) + Math.pow(y, 2.0) + Math.pow(z, 2.0));
+    }
+
+    /**
+     * Returns a new vector parallel to this vector with norm equals to <code>1</code>.
+     * 
+     * @return a new vector parallel to this vector with norm equals to <code>1</code>
+     */
+    final PositionVector normalize() {
+        final double scale = 1.0 / norm();
+        return scale(scale);
+    }
+
+    /**
+     * Returns a new vector resulting from the scalar multiplication of each component of this
+     * vector by the specified scalar.
+     * 
+     * @param s the scalar
+     * @return a new vector resulting from the scalar multiplication of each component of this
+     *         vector by the specified scalar
+     */
+    final PositionVector scale(final double s) {
+        return new PositionVector(x * s, y * s, z * s);
+    }
+
+    // subtract
+    final PositionVector subtract(final PositionVector o) {
+        return new PositionVector(x - o.x, y - o.y, z - o.z);
     }
 
     final double x() {
@@ -180,6 +176,10 @@ public final class PositionVector {
 
     final double y() {
         return y;
+    }
+
+    final double z() {
+        return z;
     }
 
     /**

@@ -142,25 +142,25 @@ final class TriangulationKernel {
     }
 
     /**
-     * Returns the face that contains {@link GreatArc#start()} as one of its vertices and is cut by
+     * Returns the face that contains {@link GreatArc#from()} as one of its vertices and is cut by
      * edge Returns <code>null</code> if no such face exists. Specified edge shall not exist in this
      * triangulation.
      * 
      * @param edge the edge
-     * @return the face that contains {@link GreatArc#start()} as one of its vertices and is cut by
+     * @return the face that contains {@link GreatArc#from()} as one of its vertices and is cut by
      *         edge Returns <code>null</code> if no such face exists
-     * @throws GeometryException if the no face opposed to {@link GreatArc#start()} could be found,
+     * @throws GeometryException if the no face opposed to {@link GreatArc#from()} could be found,
      *             thus leading the algorithm to fail
      */
     final Triangle intersectingFace(final GreatArc edge) throws GeometryException {
-        // find half-edge whose vertex is edge#start()
-        final HalfEdge he = vertexEdge(edge.start());
+        // find half-edge whose vertex is edge#from()
+        final HalfEdge he = vertexEdge(edge.from());
         if (he != null) {
             HalfEdge currentHe = he;
-            // loop through all faces connected to vertex edge#start()
+            // loop through all faces connected to vertex edge#from()
             do {
                 final Triangle face = currentHe.face();
-                if (face.opposedEdge(edge.start()).intersects(edge, false)) {
+                if (face.opposedEdge(edge.from()).intersects(edge, false)) {
                     return face;
                 }
                 // next half-edge connected to vertex
@@ -267,7 +267,7 @@ final class TriangulationKernel {
         final List<GreatArc> edges = face.edges();
         HalfEdge he = null;
         for (final GreatArc edge : edges) {
-            he = new HalfEdge(edge.start(), face);
+            he = new HalfEdge(edge.from(), face);
             halfEdges.put(edge, he);
         }
 

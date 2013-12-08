@@ -5,12 +5,12 @@ import java.util.List;
 
 /**
  * A closed segment of great circle. This arc represent the shortest path on the surface of the
- * sphere from its start {@link PositionVector position vector} to its end {@link PositionVector
- * position vector}.
+ * sphere from its <code>from</code> {@link PositionVector point} to its <code>to</code>
+ * {@link PositionVector point}.
  * 
  * <ul>
- * <li>great arcs are oriented: i.e. <code>new GreatArc(start, end)</code> and
- * <code>new GreatArc(end, start)</code> are not {@link #equals(Object)}.
+ * <li>great arcs are oriented: i.e. <code>new GreatArc(from, to)</code> and
+ * <code>new GreatArc(to, from)</code> are not {@link #equals(Object)}.
  * <li>any two points on a sphere uniquely define a great circle (so long as they are not
  * antipodal).
  * <li>a great arc cannot be constructed if end points are either identical or antipodals - the
@@ -19,63 +19,61 @@ import java.util.List;
  */
 public final class GreatArc {
 
-    private final PositionVector start;
+    private final PositionVector from;
 
-    private final PositionVector end;
+    private final PositionVector to;
 
     private final PositionVector normal;
 
     /**
      * Constructor.
      * 
-     * @param aStart start {@link PositionVector position vector}
-     * @param anEnd end {@link PositionVector position vector}
+     * @param fromPosition from {@link PositionVector point}
+     * @param toPosition to {@link PositionVector point}
      * @throws GeometryException if the two end points are either identical or antipodal
      */
-    public GreatArc(final PositionVector aStart, final PositionVector anEnd) throws GeometryException {
+    public GreatArc(final PositionVector fromPosition, final PositionVector toPosition) throws GeometryException {
 
         /*
          * start and end must be different
          */
-        if (aStart.equals(anEnd)) {
-            throw new IdenticalEndPointsException(aStart, anEnd);
+        if (fromPosition.equals(toPosition)) {
+            throw new IdenticalEndPointsException(fromPosition, toPosition);
         }
 
         /*
-         * start and end must not be antipodal points - since an infinity of great circles pass
-         * through 2 antipodal points.
+         * start and end must not be antipodal - since an infinity of great circles pass through 2
+         * antipodal points.
          */
-        if (aStart.antipode().equals(anEnd)) {
-            throw new AntipodalEndPointsException(aStart, anEnd);
+        if (fromPosition.antipode().equals(toPosition)) {
+            throw new AntipodalEndPointsException(fromPosition, toPosition);
         }
 
-        start = aStart;
-        end = anEnd;
+        from = fromPosition;
+        to = toPosition;
 
         /*
          * the normal vector to the plan of the great circle defined by this great arc.
          */
-        normal = start.cross(end);
+        normal = from.cross(to);
 
     }
 
     /**
-     * Returns <code>true</code> if and only if the specified vertex lies on this great arc.
+     * Returns <code>true</code> if and only if the specified {@link PositionVector point} lies on
+     * this great arc.
      * 
-     * @param v the vertex
-     * @return <code>true</code> if and only if the specified vertex lies on this great arc
+     * @param p the point
+     * @return <code>true</code> if and only if the specified {@link PositionVector point} lies on
+     *         this great arc
      */
-    public final boolean contains(final PositionVector v) {
+    public final boolean contains(final PositionVector p) {
         try {
-            v.leftOf(start, end);
+            p.leftOf(from, to);
             return false;
         } catch (final CollinearPointsException e) {
-            return isWithin(v);
+            return isWithin(p);
         }
-    }
-
-    public final PositionVector end() {
-        return end;
     }
 
     @Override
@@ -87,19 +85,28 @@ public final class GreatArc {
             result = true;
         } else if (GreatArc.class.isInstance(o)) {
             final GreatArc other = (GreatArc) o;
-            result = start.equals(other.start) && end.equals(other.end);
+            result = from.equals(other.from) && to.equals(other.to);
         } else {
             result = false;
         }
         return result;
     }
 
+    /**
+     * Returns the <code>from</code> {@link PositionVector point} of this great arc.
+     * 
+     * @return the <code>from</code> {@link PositionVector point} of this great arc
+     */
+    public final PositionVector from() {
+        return from;
+    }
+
     @Override
     public final int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + start.hashCode();
-        result = prime * result + end.hashCode();
+        result = prime * result + from.hashCode();
+        result = prime * result + to.hashCode();
         return result;
     }
 
@@ -164,32 +171,43 @@ public final class GreatArc {
     }
 
     /**
-     * Returns the {@link PositionVector position vector} that is the midpoint between this
-     * <tt>GreatArc</tt> end points.
+     * Returns the {@link PositionVector point} that is the midpoint between this <tt>GreatArc</tt>
+     * end points.
      * 
-     * @return the {@link PositionVector position vector} that is the midpoint between this
-     *         <tt>GreatArc</tt> end points
+     * @return the {@link PositionVector point} that is the midpoint between this <tt>GreatArc</tt>
+     *         end points
      */
     public final PositionVector midPoint() {
-        return start.add(end).normalize();
+        return from.add(to).normalize();
     }
 
+    /**
+     * Returns a new <code>GreatArc</code> which is opposite to this <code>GreatArc</code>; i.e.
+     * returns <code>new GreatArc(to, from)</code>.
+     * 
+     * @return a new <code>GreatArc</code> which is opposite to this <code>GreatArc</code>
+     */
     public final GreatArc opposite() {
         try {
-            return new GreatArc(end, start);
+            return new GreatArc(to, from);
         } catch (final GeometryException e) {
             // impossible since start and end have been checked.
             throw new IllegalStateException("Something went very wrong...", e);
         }
     }
 
-    public final PositionVector start() {
-        return start;
+    /**
+     * Returns the <code>to</code> {@link PositionVector point} of this great arc.
+     * 
+     * @return the <code>to</code> {@link PositionVector point} of this great arc
+     */
+    public final PositionVector to() {
+        return to;
     }
 
     @Override
     public final String toString() {
-        return "GreatArc [" + start + " to " + end + "]";
+        return "GreatArc [" + from + " to " + to + "]";
     }
 
     /**
@@ -200,12 +218,12 @@ public final class GreatArc {
      */
     private PositionVector[] commonPoints(final GreatArc o) {
         final List<PositionVector> result = new ArrayList<PositionVector>();
-        if (start.equals(o.start) || start.equals(o.end)) {
-            result.add(start);
+        if (from.equals(o.from) || from.equals(o.to)) {
+            result.add(from);
         }
 
-        if (end.equals(o.start) || end.equals(o.end)) {
-            result.add(end);
+        if (to.equals(o.from) || to.equals(o.to)) {
+            result.add(to);
         }
         return result.toArray(new PositionVector[result.size()]);
     }
@@ -223,8 +241,8 @@ public final class GreatArc {
      *         are the same
      */
     private PositionVector[] intersections(final GreatArc o) {
-        final PositionVector tcn = start.cross(end).normalize();
-        final PositionVector ocn = o.start.cross(o.end).normalize();
+        final PositionVector tcn = from.cross(to).normalize();
+        final PositionVector ocn = o.from.cross(o.to).normalize();
         final PositionVector intersection = tcn.cross(ocn).normalize();
         final PositionVector[] result;
         if (Double.isNaN(intersection.x()) || Double.isNaN(intersection.y()) || Double.isNaN(intersection.z())) {
@@ -237,16 +255,16 @@ public final class GreatArc {
     }
 
     /**
-     * Returns <code>true</code> if and only if this great arc contains the specified position
+     * Returns <code>true</code> if and only if this great arc contains the specified point
      * <strong>that belongs to the great circle defined by this great arc</strong>. This method is
      * intended to be used only by {@link #intersections(GreatArc)}.
      * 
-     * @param v the position vector
-     * @return <code>true</code> if and only if this great arc contains the specified position
+     * @param p the point
+     * @return <code>true</code> if and only if this great arc contains the specified point
      */
-    private boolean isWithin(final PositionVector v) {
-        final PositionVector normalStartPoint = start.cross(v);
-        final PositionVector normalEndPoint = v.cross(end);
+    private boolean isWithin(final PositionVector p) {
+        final PositionVector normalStartPoint = from.cross(p);
+        final PositionVector normalEndPoint = p.cross(to);
         return normal.dot(normalStartPoint) > 0.0 && normal.dot(normalEndPoint) > 0.0;
     }
 

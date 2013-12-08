@@ -33,8 +33,8 @@ public final class Triangulator {
     public final void addConstrainedEdge(final GreatArc edge) throws GeometryException {
         if (!kernel.containsEdge(edge)) {
 
-            final PositionVector start = edge.start();
-            final PositionVector end = edge.end();
+            final PositionVector start = edge.from();
+            final PositionVector end = edge.to();
 
             Triangle face = kernel.intersectingFace(edge);
 
@@ -185,8 +185,8 @@ public final class Triangulator {
         if (!polygon.isEmpty()) {
             int cIndex = 0;
             PositionVector c = polygon.get(cIndex);
-            final PositionVector start = edge.start();
-            final PositionVector end = edge.end();
+            final PositionVector start = edge.from();
+            final PositionVector end = edge.to();
             if (polygon.size() > 1) {
                 for (int index = 0; index < polygon.size(); index++) {
                     final PositionVector v = polygon.get(index);
