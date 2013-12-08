@@ -1,6 +1,9 @@
 package org.omam.sherpa.geometry;
 
-public class GeometryException extends Exception {
+/**
+ * Base exception for all exceptions thrown by geometric operations.
+ */
+public abstract class GeometryException extends Exception {
 
     /**
      * generated serial version UID.

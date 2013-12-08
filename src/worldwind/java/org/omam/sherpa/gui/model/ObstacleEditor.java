@@ -40,34 +40,13 @@ public final class ObstacleEditor extends BasicDragger {
         listeners.add(l);
     }
 
-    public final boolean isArmed() {
-        return armed;
-    }
-
-    public final void newObstacle(final Position center) {
-        armed = true;
-        obstacle = factory.createSurfaceObstacle(center);
-        fireObstacleCreated();
-    }
-
-    public final void moveVertex(final SelectEvent event) {
-        final LatLon vertex = ((SurfaceIcon) event.getTopObject()).getLocation();
-        final List<LatLon> locations = obstacle.locations();
-        final int vIndex = locations.indexOf(vertex);
-        if (vIndex != -1) {
-            locations.set(vIndex, wwd.getCurrentPosition());
-            obstacle.setLocations(locations);
-            event.consume();
-            fireObstacleChanged();
-        }
-    }
-
-    public final void moveObstacle(final SelectEvent event) {
-        if (event.getTopObject().equals(obstacle.polygon())) {
-            super.selected(event);
-            obstacle.refreshVertices();
-            fireObstacleChanged();
-        }
+    public final SurfaceObstacle commit() {
+        final SurfaceObstacle result = obstacle;
+        armed = false;
+        model.addObstacle(obstacle);
+        obstacle = null;
+        fireObstacleCommitted();
+        return result;
     }
 
     public final void insertVertex(final Position newVertex) {
@@ -108,19 +87,34 @@ public final class ObstacleEditor extends BasicDragger {
         fireObstacleChanged();
     }
 
-    public final SurfaceObstacle commit() {
-        final SurfaceObstacle result = obstacle;
-        armed = false;
-        model.addObstacle(obstacle);
-        obstacle = null;
-        fireObstacleCommitted();
-        return result;
+    public final boolean isArmed() {
+        return armed;
     }
 
-    private void fireObstacleCreated() {
-        for (final ObstacleEditorListener l : listeners) {
-            l.obstacleCreated(obstacle);
+    public final void moveObstacle(final SelectEvent event) {
+        if (event.getTopObject().equals(obstacle.polygon())) {
+            super.selected(event);
+            obstacle.refreshVertices();
+            fireObstacleChanged();
         }
+    }
+
+    public final void moveVertex(final SelectEvent event) {
+        final LatLon vertex = ((SurfaceIcon) event.getTopObject()).getLocation();
+        final List<LatLon> locations = obstacle.locations();
+        final int vIndex = locations.indexOf(vertex);
+        if (vIndex != -1) {
+            locations.set(vIndex, wwd.getCurrentPosition());
+            obstacle.setLocations(locations);
+            event.consume();
+            fireObstacleChanged();
+        }
+    }
+
+    public final void newObstacle(final Position center) {
+        armed = true;
+        obstacle = factory.createSurfaceObstacle(center);
+        fireObstacleCreated();
     }
 
     private void fireObstacleChanged() {
@@ -132,6 +126,12 @@ public final class ObstacleEditor extends BasicDragger {
     private void fireObstacleCommitted() {
         for (final ObstacleEditorListener l : listeners) {
             l.obstacleCommitted();
+        }
+    }
+
+    private void fireObstacleCreated() {
+        for (final ObstacleEditorListener l : listeners) {
+            l.obstacleCreated(obstacle);
         }
     }
 

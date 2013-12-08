@@ -35,17 +35,6 @@ final class ObstacleFactory {
         return NAME + id;
     }
 
-    private static final double getViewportScaleFactor(final WorldWindow wwd) {
-        return ((OrbitView) wwd.getView()).getZoom() / 16.0;
-    }
-
-    private static final Angle getNewShapeHeading(final WorldWindow wwd) {
-        if (wwd.getView() instanceof OrbitView) {
-            return ((OrbitView) wwd.getView()).getHeading();
-        }
-        return Angle.ZERO;
-    }
-
     // Creates a rectangle in the specified position as center. Attempts to
     // guess
     // at a reasonable size and height based on the viewport.
@@ -76,6 +65,17 @@ final class ObstacleFactory {
         }
 
         return Arrays.asList(locations);
+    }
+
+    private static final Angle getNewShapeHeading(final WorldWindow wwd) {
+        if (wwd.getView() instanceof OrbitView) {
+            return ((OrbitView) wwd.getView()).getHeading();
+        }
+        return Angle.ZERO;
+    }
+
+    private static final double getViewportScaleFactor(final WorldWindow wwd) {
+        return ((OrbitView) wwd.getView()).getZoom() / 16.0;
     }
 
 }

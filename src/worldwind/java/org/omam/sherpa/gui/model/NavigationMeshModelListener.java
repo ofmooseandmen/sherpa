@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface NavigationMeshModelListener {
 
-    void navMeshChanged(final List<SurfacePolygon> faces, final List<SurfacePolyline> constrainedEdges);
+    void error(final Throwable cause);
 
-    void error(final String message);
+    void navMeshChanged(final List<SurfacePolygon> faces, final List<SurfacePolyline> constrainedEdges);
 
 }

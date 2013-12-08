@@ -12,6 +12,7 @@ import java.util.List;
 
 import javax.swing.JFrame;
 
+import org.omam.sherpa.delaunay.TriangulationException;
 import org.omam.sherpa.geometry.GeometryException;
 import org.omam.sherpa.gui.controller.WorldWindowController;
 import org.omam.sherpa.gui.model.NavigationMeshModel;
@@ -30,7 +31,7 @@ final class GuiFrame extends JFrame {
 
     private final NavigationMeshModel navMeshModel;
 
-    GuiFrame() throws GeometryException {
+    GuiFrame() throws GeometryException, TriangulationException {
         final List<Layer> layers = new ArrayList<Layer>();
         final RenderableLayer navMeshLayer = new RenderableLayer();
         navMeshLayer.setPickEnabled(false);

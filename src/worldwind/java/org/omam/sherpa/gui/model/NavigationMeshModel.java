@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.omam.sherpa.delaunay.HalfEdge;
+import org.omam.sherpa.delaunay.TriangulationException;
 import org.omam.sherpa.geometry.CoordinatesConverter;
 import org.omam.sherpa.geometry.GeometryException;
 import org.omam.sherpa.geometry.PositionVector;
@@ -20,24 +21,9 @@ public final class NavigationMeshModel {
 
     private final List<NavigationMeshModelListener> listeners;
 
-    public NavigationMeshModel() throws GeometryException {
+    public NavigationMeshModel() throws GeometryException, TriangulationException {
         navMesh = new NavigationMesh(5);
         listeners = new ArrayList<NavigationMeshModelListener>();
-    }
-
-    public final void newObstacle(final SurfacePolygon o) {
-        try {
-            navMesh.addObstacle(createVertices(o));
-            fireNavMeshChanged();
-        } catch (final GeometryException e) {
-            fireNavMeshError(e.getMessage());
-        }
-    }
-
-    private void fireNavMeshError(final String message) {
-        for (final NavigationMeshModelListener l : listeners) {
-            l.error(message);
-        }
     }
 
     public final void addListener(final NavigationMeshModelListener l) {
@@ -48,6 +34,22 @@ public final class NavigationMeshModel {
         fireNavMeshChanged();
     }
 
+    public final void newObstacle(final SurfacePolygon o) {
+        try {
+            navMesh.addObstacle(createVertices(o));
+            fireNavMeshChanged();
+        } catch (final GeometryException e) {
+            fireNavMeshError(e);
+        } catch (final TriangulationException e) {
+            fireNavMeshError(e);
+        }
+    }
+
+    private LatLon convert(final PositionVector v) {
+        final double[] geodeticCoord = CoordinatesConverter.toGeodetic(v);
+        return LatLon.fromDegrees(geodeticCoord[0], geodeticCoord[1]);
+    }
+
     private PositionVector[] createVertices(final SurfacePolygon o) {
         final List<PositionVector> vertices = new ArrayList<PositionVector>();
         for (final LatLon latLong : o.getLocations()) {
@@ -55,11 +57,6 @@ public final class NavigationMeshModel {
                     .getDegrees()));
         }
         return vertices.toArray(new PositionVector[vertices.size()]);
-    }
-
-    private LatLon convert(final PositionVector v) {
-        final double[] geodeticCoord = CoordinatesConverter.toGeodetic(v);
-        return LatLon.fromDegrees(geodeticCoord[0], geodeticCoord[1]);
     }
 
     private void fireNavMeshChanged() {
@@ -84,6 +81,12 @@ public final class NavigationMeshModel {
 
         for (final NavigationMeshModelListener l : listeners) {
             l.navMeshChanged(faces, constrainedEdges);
+        }
+    }
+
+    private void fireNavMeshError(final Throwable cause) {
+        for (final NavigationMeshModelListener l : listeners) {
+            l.error(cause);
         }
     }
 

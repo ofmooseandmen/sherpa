@@ -24,28 +24,12 @@ public final class HalfEdge {
         constrainted = false;
     }
 
-    final void previous(final HalfEdge he) {
-        previous = he;
-    }
-
-    final void next(final HalfEdge he) {
-        next = he;
-    }
-
-    final void opposite(final HalfEdge he) {
-        opposite = he;
-    }
-
-    final void constrained() {
-        constrainted = true;
+    public final Triangle face() {
+        return f;
     }
 
     public final boolean isConstrained() {
         return constrainted;
-    }
-
-    public final HalfEdge previous() {
-        return previous;
     }
 
     public final HalfEdge next() {
@@ -56,12 +40,28 @@ public final class HalfEdge {
         return opposite;
     }
 
-    public final Triangle face() {
-        return f;
+    public final HalfEdge previous() {
+        return previous;
     }
 
     public final PositionVector vertex() {
         return v;
+    }
+
+    final void constrained() {
+        constrainted = true;
+    }
+
+    final void next(final HalfEdge he) {
+        next = he;
+    }
+
+    final void opposite(final HalfEdge he) {
+        opposite = he;
+    }
+
+    final void previous(final HalfEdge he) {
+        previous = he;
     }
 
 }

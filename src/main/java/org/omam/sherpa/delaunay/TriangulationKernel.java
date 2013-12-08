@@ -149,10 +149,8 @@ final class TriangulationKernel {
      * @param edge the edge
      * @return the face that contains {@link GreatArc#from()} as one of its vertices and is cut by
      *         edge Returns <code>null</code> if no such face exists
-     * @throws GeometryException if the no face opposed to {@link GreatArc#from()} could be found,
-     *             thus leading the algorithm to fail
      */
-    final Triangle intersectingFace(final GreatArc edge) throws GeometryException {
+    final Triangle intersectingFace(final GreatArc edge) {
         // find half-edge whose vertex is edge#from()
         final HalfEdge he = vertexEdge(edge.from());
         if (he != null) {
@@ -174,7 +172,7 @@ final class TriangulationKernel {
      * Returns the {@link HalfEdge} he in the face <strong>f2</strong> that satisfies
      * {@link HalfEdge#opposite()} belongs to f1 or <code>null</code> if no such half-edge exists.
      * <p>
-     * {@link NullPointerException} is thrown if f1 does not belong to the triangulation.
+     * Throws {@link NullPointerException} if f1 does not belong to the triangulation.
      * 
      * @param f1 first face
      * @param f2 second face

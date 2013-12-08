@@ -33,16 +33,6 @@ public final class SurfaceObstacle {
         return vertices;
     }
 
-    final void newLocations(final List<LatLon> locations) {
-        polygon.setLocations(locations);
-        setVertices();
-    }
-    
-    final void setLocations(List<LatLon> locations) {
-        polygon.setLocations(locations);
-        refreshVertices();
-    }
-
     final List<LatLon> locations() {
         List<LatLon> result = new ArrayList<LatLon>();
         for (final LatLon location : polygon.getLocations()) {
@@ -50,12 +40,22 @@ public final class SurfaceObstacle {
         }
         return result;
     }
+    
+    final void newLocations(final List<LatLon> locations) {
+        polygon.setLocations(locations);
+        setVertices();
+    }
 
     final void refreshVertices() {
         List<LatLon> locations = locations();
         for (int i = 0; i < locations.size(); i++) {
             vertices.get(i).setLocation(locations.get(i));
         }
+    }
+
+    final void setLocations(List<LatLon> locations) {
+        polygon.setLocations(locations);
+        refreshVertices();
     }
 
     private void setVertices() {

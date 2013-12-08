@@ -17,16 +17,16 @@ public final class NavigableFace {
         adjacentFaces = new ArrayList<NavigableFace>();
     }
 
+    public final Collection<NavigableFace> adjacentFaces() {
+        return adjacentFaces;
+    }
+
     public final Triangle face() {
         return face;
     }
 
     final void addAdjacentFace(final NavigableFace adjacentFace) {
         adjacentFaces.add(adjacentFace);
-    }
-
-    public final Collection<NavigableFace> adjacentFaces() {
-        return adjacentFaces;
     }
 
 }

@@ -12,7 +12,8 @@ import org.omam.sherpa.geometry.PositionVector;
 import org.omam.sherpa.geometry.Triangle;
 
 /**
- * Delaunay triangulator on a sphere.
+ * This class provides operations to construct and update a constrained Delaunay triangulation on a
+ * sphere.
  * <p>
  * Most algorithms are taken from
  * <ul>
@@ -29,8 +30,109 @@ public final class Triangulator {
         kernel = new TriangulationKernel(boundaries);
     }
 
+    /**
+     * Adds the specified constraint to this triangulation by first incrementally
+     * {@link #addPoint(PositionVector) adding} each vertex to this triangulation and then inserting
+     * to this triangulation all the edges defined by this constraint as constrained edges. The
+     * second step follows the algorithm proposed by <i>Anglada</i> in
+     * <i>"An improved incremental algorithm for constructing restricted Delaunay triangulations"
+     * </i>:
+     * <ol>
+     * <li>
+     * Remove the triangles t1,...,tk cut by the edge from the triangulation so that a region
+     * without triangulation is left.
+     * <li>
+     * Add the edge to the result.
+     * <li>
+     * Re-triangulate the upper and lower regions of the edge that were not triangulated in the
+     * first step.
+     * </ol>
+     * <p>
+     * If the constraint contains more than 2 vertices and first and last vertices are different,
+     * the constraint is closed by adding an edge joining last and first vertices
+     * 
+     * @param id the <strong>unique</strong> identifier of the constraint to be added
+     * @param vertices the vertices of the constraint to be added
+     * @throws GeometryException if the operation fails for geometric reasons
+     * @throws TriangulationException if one of the vertices cannot be located within the
+     *             triangulation or is an already constrained edge would be amended as a result of
+     *             this operation
+     */
+    public final void addConstraint(@SuppressWarnings("unused") final String id, final PositionVector[] vertices)
+            throws GeometryException, TriangulationException {
+        // first insert points in triangulation
+        for (final PositionVector vertex : vertices) {
+            addPoint(vertex);
+        }
+        // then insert constrained edges
+        for (int i = 0; i < vertices.length - 1; i++) {
+            addConstrainedEdge(new GreatArc(vertices[i], vertices[i + 1]));
+        }
+        // if length > 2 and first and last are different, close the constraint
+        if (vertices.length > 2) {
+            final PositionVector first = vertices[0];
+            final PositionVector last = vertices[vertices.length - 1];
+            if (!first.equals(last)) {
+                addConstrainedEdge(new GreatArc(last, first));
+            }
+        }
+    }
+
+    /**
+     * Adds the specified {@link PositionVector point} to this triangulation. The point shall be
+     * located within the triangulation.
+     * <ul>
+     * <li>If the point is already part of this triangulation, this method returns immediately
+     * without altering the triangulation
+     * <li>Otherwise the point is inserted and all non-Delaunay edges are flipped until all edges
+     * become Delaunay
+     * </ul>
+     * This method supports points located on an edge of this triangulation unless said edge is
+     * constrained.
+     * 
+     * 
+     * @param p the point to be added
+     * @throws GeometryException if the operation fails for geometric reasons
+     * @throws FaceNotFoundException if the point cannot be located within the triangulation
+     */
+    public final void addPoint(final PositionVector p) throws GeometryException, TriangulationException {
+        if (kernel.containsVertex(p)) {
+            /*
+             * point already present in this triangulation, no need to go any further.
+             */
+        } else {
+            final HalfEdge he = kernel.edge(p);
+            if (he != null) {
+                insertPointInEdge(p, he);
+            } else {
+                final Triangle face = kernel.face(p);
+                if (face != null) {
+                    insertPointInFace(p, face);
+                } else {
+                    throw new FaceNotFoundException("No face containing vertex [" + p + "] was found.");
+                }
+            }
+        }
+    }
+
+    public final Collection<HalfEdge> edges() {
+        return kernel.edges();
+    }
+
+    public final Collection<Triangle> faces() {
+        return kernel.faces();
+    }
+
+    public final void tessellate(final int tessellationLevel) throws GeometryException, TriangulationException {
+        int level = 0;
+        while (level < tessellationLevel) {
+            tessellateOnce();
+            level++;
+        }
+    }
+
     // FIXME : throw Exception if edge is crossing another constrained edge...
-    public final void addConstrainedEdge(final GreatArc edge) throws GeometryException {
+    private void addConstrainedEdge(final GreatArc edge) throws GeometryException {
         if (!kernel.containsEdge(edge)) {
 
             final PositionVector start = edge.from();
@@ -102,44 +204,11 @@ public final class Triangulator {
         kernel.constrain(edge);
     }
 
-    // FIXME : throw Exception instead of IllegalArgumentException
-    public final void addPoint(final PositionVector v) throws GeometryException {
-        if (kernel.containsVertex(v)) {
-            /*
-             * point already present in this triangulation, no need to go any further.
-             */
-        } else {
-            final HalfEdge he = kernel.edge(v);
-            if (he != null) {
-                insertPointInEdge(v, he);
-            } else {
-                final Triangle face = kernel.face(v);
-                if (face != null) {
-                    insertPointInFace(v, face);
-                } else {
-                    throw new IllegalArgumentException("No face containing vertex [" + v + "] was found.");
-                }
-            }
+    private void insertPointInEdge(final PositionVector v, final HalfEdge he) throws GeometryException,
+            ConstrainedEdgeException {
+        if (he.isConstrained()) {
+            throw new ConstrainedEdgeException(he + " is constrained.");
         }
-    }
-
-    public final Collection<HalfEdge> edges() {
-        return kernel.edges();
-    }
-
-    public final Collection<Triangle> faces() {
-        return kernel.faces();
-    }
-
-    public final void tessellate(final int tessellationLevel) throws GeometryException {
-        int level = 0;
-        while (level < tessellationLevel) {
-            tessellateOnce();
-            level++;
-        }
-    }
-
-    private void insertPointInEdge(final PositionVector v, final HalfEdge he) throws GeometryException {
         final Triangle f1 = he.face();
         final Triangle f2 = he.opposite().face();
         final List<Triangle> divided = kernel.divide(f1, f2, v);
@@ -168,7 +237,7 @@ public final class Triangulator {
         }
     }
 
-    private void tessellateOnce() throws GeometryException {
+    private void tessellateOnce() throws GeometryException, TriangulationException {
         final List<PositionVector> circumcentres = new ArrayList<PositionVector>();
         for (final Triangle face : kernel.faces()) {
             circumcentres.add(face.circumcentre());

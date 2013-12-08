@@ -4,14 +4,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * This class provides the definition of an icosahedron: a polyhedron with 20 triangular faces, 30
+ * edges and 12 vertices.
+ */
 public final class Icosahedron {
 
-    // north pole
+    /** north pole. */
     private static final PositionVector NORTH_POLE = new PositionVector(0.0, 0.0, 1.0);
 
-    // south pole
+    /** south pole. */
     private static final PositionVector SOUTH_POLE = new PositionVector(0.0, 0.0, -1.0);
 
+    /**
+     * Returns the list of faces that make up an icosahedron which covers the earth.
+     * 
+     * @return the list of faces that make up an icosahedron which covers the earth
+     */
     public final static List<Triangle> build() {
         final double latIncrement = Math.toDegrees(Math.atan(0.5));
         // An icosahedron is defined by 12 points

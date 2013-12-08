@@ -8,6 +8,8 @@ import gov.nasa.worldwind.render.SurfacePolygon;
 import gov.nasa.worldwind.render.SurfacePolyline;
 
 import java.beans.PropertyChangeEvent;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -30,8 +32,10 @@ public final class NavigationMeshView implements NavigationMeshModelListener {
     }
 
     @Override
-    public final void error(final String message) {
-        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+    public final void error(final Throwable cause) {
+        final StringWriter errors = new StringWriter();
+        cause.printStackTrace(new PrintWriter(errors));
+        JOptionPane.showMessageDialog(null, errors.toString(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     @Override

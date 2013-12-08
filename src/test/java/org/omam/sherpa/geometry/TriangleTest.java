@@ -108,7 +108,7 @@ public class TriangleTest {
         assertEquals(EarthCoordinates.STOCKHOLM, opposedEdge.to());
     }
 
-    @Test(expected = GeometryException.class)
+    @Test(expected = IllegalArgumentException.class)
     public final void opposedEdgeFails() throws GeometryException {
         final Triangle t = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.STOCKHOLM, EarthCoordinates.GOTEBORG);
         t.opposedEdge(EarthCoordinates.LUND);
