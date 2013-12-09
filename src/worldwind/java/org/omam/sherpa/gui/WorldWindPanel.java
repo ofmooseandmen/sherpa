@@ -27,12 +27,11 @@ final class WorldWindPanel extends JPanel {
         super(new BorderLayout());
 
         wwd = new WorldWindowGLCanvas();
-        WorldWind.setOfflineMode(true);
         final Dimension canvasSize = new Dimension(800, 600);
         wwd.setPreferredSize(canvasSize);
 
         // Create the default model as described in the current worldwind properties.
-        Model m = (Model) WorldWind.createConfigurationComponent(AVKey.MODEL_CLASS_NAME);
+        final Model m = (Model) WorldWind.createConfigurationComponent(AVKey.MODEL_CLASS_NAME);
         wwd.setModel(m);
 
         add(wwd, BorderLayout.CENTER);
@@ -47,9 +46,11 @@ final class WorldWindPanel extends JPanel {
         for (final Layer layer : layers) {
             wwd.getModel().getLayers().add(layer);
         }
-        
-        // Search the layer list for layers that are also select listeners and register them with the World
-        // Window. This enables interactive layers to be included without specific knowledge of them here.
+
+        // Search the layer list for layers that are also select listeners and register them with
+        // the World
+        // Window. This enables interactive layers to be included without specific knowledge of them
+        // here.
         for (final Layer layer : wwd.getModel().getLayers()) {
             if (layer instanceof SelectListener) {
                 wwd.addSelectListener((SelectListener) layer);

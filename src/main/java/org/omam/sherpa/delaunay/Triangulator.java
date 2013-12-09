@@ -228,23 +228,29 @@ public final class Triangulator {
         while (!stack.isEmpty()) {
             final Triangle f = stack.removeFirst();
             final Triangle fopo = kernel.opposedFace(f, v);
-            final HalfEdge link = kernel.link(f, fopo);
-            if (!link.isConstrained() && fopo.circumcircleContains(v)) {
-                final List<Triangle> swapped = kernel.swapEdge(f, fopo);
-                stack.addFirst(swapped.get(0));
-                stack.addFirst(swapped.get(1));
+            if (fopo != null) {
+                final HalfEdge link = kernel.link(f, fopo);
+                if (!link.isConstrained() && fopo.circumcircleContains(v)) {
+                    final List<Triangle> swapped = kernel.swapEdge(f, fopo);
+                    stack.addFirst(swapped.get(0));
+                    stack.addFirst(swapped.get(1));
+                }
             }
         }
     }
 
     private void tessellateOnce() throws GeometryException, TriangulationException {
-        final List<PositionVector> circumcentres = new ArrayList<PositionVector>();
+        /*
+         * Incrementally add the centroid of each triangle since the centroid is guaranteed to be
+         * inside the triangle.
+         */
+        final List<PositionVector> centroids = new ArrayList<PositionVector>();
         for (final Triangle face : kernel.faces()) {
-            circumcentres.add(face.circumcentre());
+            centroids.add(face.centroid());
         }
 
-        for (final PositionVector circumcentre : circumcentres) {
-            addPoint(circumcentre);
+        for (final PositionVector centroid : centroids) {
+            addPoint(centroid);
         }
     }
 

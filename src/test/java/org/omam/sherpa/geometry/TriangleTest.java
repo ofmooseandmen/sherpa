@@ -17,6 +17,16 @@ public class TriangleTest {
     }
 
     @Test
+    public final void centroid() throws GeometryException {
+        final Triangle t = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.STOCKHOLM, EarthCoordinates.GOTEBORG);
+        final PositionVector centroid = t.centroid();
+        assertTrue(PositionVector.equals(0.5196925854802443, centroid.x()));
+        assertTrue(PositionVector.equals(0.13220656360250882, centroid.y()));
+        assertTrue(PositionVector.equals(0.844062225868019, centroid.z()));
+        assertTrue(t.contains(centroid));
+    }
+
+    @Test
     public final void circumcircleContains() throws GeometryException {
         final Triangle t = new Triangle(EarthCoordinates.MALMOE, EarthCoordinates.GOTEBORG, EarthCoordinates.STOCKHOLM);
         assertTrue(t.circumcircleContains(EarthCoordinates.KALMAR));

@@ -3,6 +3,8 @@ package org.omam.sherpa.gui;
 import gov.nasa.worldwind.Configuration;
 
 import java.awt.Frame;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
 
 import javax.swing.JFrame;
@@ -48,16 +50,9 @@ public final class SherpaGui {
 
                 @Override
                 public final void uncaughtException(final Thread t, final Throwable e) {
-                    final String cr = System.getProperty("line.separator");
-                    final StackTraceElement[] ses = e.getStackTrace();
-                    String msg = e.getCause() + ":" + e.getMessage() + cr;
-                    for (final StackTraceElement se : ses) {
-                        if (se.getClassName().contains("omam")) {
-                            msg += se.toString();
-                            msg += cr;
-                        }
-                    }
-                    JOptionPane.showMessageDialog(frame, msg, "Error", JOptionPane.ERROR_MESSAGE);
+                    final StringWriter errors = new StringWriter();
+                    e.printStackTrace(new PrintWriter(errors));
+                    JOptionPane.showMessageDialog(frame, errors.toString(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             });
 

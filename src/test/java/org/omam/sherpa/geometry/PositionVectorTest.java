@@ -5,11 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.omam.sherpa.geometry.CollinearPointsException;
-import org.omam.sherpa.geometry.CoordinatesConverter;
-import org.omam.sherpa.geometry.GeometryException;
-import org.omam.sherpa.geometry.GreatArc;
-import org.omam.sherpa.geometry.PositionVector;
 
 public final class PositionVectorTest {
 
@@ -22,17 +17,17 @@ public final class PositionVectorTest {
         assertTrue(PositionVector.equals(5.0, actual.y()));
         assertTrue(PositionVector.equals(9.0, actual.z()));
     }
-    
+
     @Test
     public final void componentEquals() {
         assertTrue(PositionVector.equals(0.90000001, 0.90000002));
     }
-    
+
     @Test
     public final void componentNotEquals() {
         assertTrue(PositionVector.equals(0.9000001, 0.9000002));
     }
-    
+
     @Test
     public final void cross() {
         final PositionVector v1 = new PositionVector(1, 4, 5);
@@ -42,14 +37,14 @@ public final class PositionVectorTest {
         assertTrue(PositionVector.equals(21.0, actual.y()));
         assertTrue(PositionVector.equals(-19.0, actual.z()));
     }
-    
+
     @Test
     public final void distance() {
         final PositionVector v1 = CoordinatesConverter.toCartesian(55.583333, 13.033333);
         final PositionVector v2 = CoordinatesConverter.toCartesian(59.35, 18.066667);
         assertEquals(0.08090786, v1.distance(v2), 0.000001);
     }
-    
+
     @Test
     public final void dot() {
         final PositionVector v1 = new PositionVector(1, 4, 5);
@@ -57,32 +52,32 @@ public final class PositionVectorTest {
         final double actual = v1.dot(v2);
         assertTrue(PositionVector.equals(29.0, actual));
     }
-    
+
     @Test
     public final void equalsSameReferences() {
         final PositionVector v = EarthCoordinates.MALMOE;
         assertTrue(v.equals(v));
     }
-    
+
     @Test
     public final void equalsSameValues() {
         final PositionVector v1 = EarthCoordinates.ADELAIDE;
         final PositionVector v2 = EarthCoordinates.ADELAIDE;
         assertTrue(v1.equals(v2));
     }
-    
+
     @Test
     public final void equalsSameValuesEpsilon() {
         final PositionVector v1 = EarthCoordinates.GOTEBORG;
         final PositionVector v2 = EarthCoordinates.GOTEBORG.scale(1.0000001);
         assertTrue(v1.equals(v2));
     }
-    
+
     @Test
     public final void leftOf() throws CollinearPointsException {
         assertTrue(EarthCoordinates.KALMAR.leftOf(EarthCoordinates.STOCKHOLM, EarthCoordinates.MALMOE));
     }
-    
+
     @Test(expected = CollinearPointsException.class)
     public final void leftOf2() throws GeometryException {
         final PositionVector mid = new GreatArc(EarthCoordinates.MELBOURNE, EarthCoordinates.DARWIN).midPoint();
@@ -107,7 +102,7 @@ public final class PositionVectorTest {
     public final void normalize() {
         final PositionVector v1 = new PositionVector(1, 4, 5);
         final PositionVector v2 = new PositionVector(5, 1, 4);
-        PositionVector actual = v1.cross(v2).normalize();
+        final PositionVector actual = v1.cross(v2).normalize();
         assertTrue(PositionVector.equals(0.3620694102721483, actual.x()));
         assertTrue(PositionVector.equals(0.691223419610465, actual.y()));
         assertTrue(PositionVector.equals(-0.6253926177428015, actual.z()));

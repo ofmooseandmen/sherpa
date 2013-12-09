@@ -19,6 +19,8 @@ public final class Triangle {
 
     private final double circumradius;
 
+    private final PositionVector centroid;
+
     /**
      * Constructor.
      * <p>
@@ -37,13 +39,33 @@ public final class Triangle {
         edgeList.add(new GreatArc(vertices.get(2), vertices.get(0)));
         edges = Collections.unmodifiableList(edgeList);
 
-        circumcentre = computeCircumcentre(vertices.get(0), vertices.get(1), vertices.get(2));
+        circumcentre = computeCircumcentre();
         circumradius = circumcentre.distance(vertices.get(0));
+
+        centroid = computeCentroid();
+    }
+
+    /**
+     * Returns the centroid of this triangle: the {@link PositionVector point} which is the
+     * intersection of the three medians of the triangle (each median connecting a vertex with the
+     * midpoint of the opposite side).
+     * <p>
+     * The centroid is always inside the triangle.
+     * 
+     * @return the centroid of this triangle
+     */
+    public final PositionVector centroid() {
+        return centroid;
     }
 
     /**
      * Returns the circumcentre of this triangle: the {@link PositionVector point} which is
      * equidistant from all three vertices.
+     * <p>
+     * The circumscribed circle or circumcircle of a triangle is a circle which passes through all
+     * the vertices of the triangle.
+     * <p>
+     * The circumcentre is not necessarily inside the triangle.
      * 
      * @return the circumcentre of this triangle
      */
@@ -143,10 +165,22 @@ public final class Triangle {
         return vertices;
     }
 
-    private static PositionVector computeCircumcentre(final PositionVector v0, final PositionVector v1,
-            final PositionVector v2) {
+    private PositionVector computeCentroid() throws GeometryException {
+        final GreatArc e0 = edges.get(0);
+        final PositionVector v0 = e0.midPoint();
+        final GreatArc median1 = new GreatArc(v0, vertices.get(2));
+        final GreatArc e1 = edges.get(1);
+        final PositionVector v1 = e1.midPoint();
+        final GreatArc median2 = new GreatArc(v1, vertices.get(0));
+        return median1.intersection(median2, false);
+    }
+
+    private PositionVector computeCircumcentre() {
         // thanks to STRIPACK:
         // http://orion.math.iastate.edu/burkardt/f_src/stripack/stripack.f90
+        final PositionVector v0 = vertices.get(0);
+        final PositionVector v1 = vertices.get(1);
+        final PositionVector v2 = vertices.get(2);
         final PositionVector e0 = v1.subtract(v0);
         final PositionVector e1 = v2.subtract(v0);
         final PositionVector cu = e0.cross(e1);

@@ -32,6 +32,8 @@ final class GuiFrame extends JFrame {
     private final NavigationMeshModel navMeshModel;
 
     GuiFrame() throws GeometryException, TriangulationException {
+        navMeshModel = new NavigationMeshModel();
+
         final List<Layer> layers = new ArrayList<Layer>();
         final RenderableLayer navMeshLayer = new RenderableLayer();
         navMeshLayer.setPickEnabled(false);
@@ -50,7 +52,6 @@ final class GuiFrame extends JFrame {
         getContentPane().add(wwp, BorderLayout.CENTER);
 
         final WorldWindow wwd = wwp.getWwd();
-        navMeshModel = new NavigationMeshModel();
         final ObstaclesModel obstaclesModel = new ObstaclesModel();
         final ObstacleEditor editor = new ObstacleEditor(obstaclesModel, wwd);
 
